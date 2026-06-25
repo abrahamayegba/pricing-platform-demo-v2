@@ -15,8 +15,9 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
 import {
-  ArrowLeft, AlertCircle, MapPin, Building2, Loader2, Pencil,
-  Sparkles, TrendingUp, TrendingDown, Minus, AlertTriangle, CheckCircle2, Lightbulb, Eye, Share2, ExternalLink,
+  ArrowLeft, MapPin, Building2, Loader2, Pencil,
+  Sparkles, TrendingUp, TrendingDown, Minus, AlertTriangle, CheckCircle2, Lightbulb,
+  FileText, Send, CheckCircle, XCircle, Clock, Droplets,
 } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils-app'
@@ -232,14 +233,45 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
             <ArrowLeft className="w-4 h-4 mr-2" />Back
           </Button>
           <div className="flex items-center gap-2 flex-wrap">
-            <Badge variant="outline" className={`${ec.badge} text-xs`}>{ec.short}</Badge>
-            <Badge variant="outline" className={`${tc.badge} text-xs`}>{tc.label}</Badge>
-            <Button variant="outline" size="sm" onClick={() => setStatusDialogOpen(true)} className={cn(statusConfig.bg, statusConfig.text)}>
-              <AlertCircle className="w-4 h-4 mr-1.5" />
-              {statusConfig.label}
-            </Button>
+            {/* Business Entity badge — full label + icon */}
+            <div className={cn('inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-semibold', ec.badge)}>
+              {quote.businessEntity === 'virtual_water_services'
+                ? <Droplets className="w-3.5 h-3.5 flex-shrink-0" />
+                : <Building2 className="w-3.5 h-3.5 flex-shrink-0" />}
+              {ec.label}
+            </div>
+
+            {/* Quote type badge — icon + label */}
+            <div className={cn('inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium', tc.badge)}>
+              {quote.quoteType === 'quote'
+                ? <FileText className="w-3.5 h-3.5 flex-shrink-0" />
+                : <Send className="w-3.5 h-3.5 flex-shrink-0" />}
+              {tc.label}
+            </div>
+
+            {/* Status button — distinct icon per status */}
+            <button
+              onClick={() => setStatusDialogOpen(true)}
+              className={cn(
+                'inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-semibold transition-opacity hover:opacity-80',
+                quote.status === 'draft'    && 'bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-600',
+                quote.status === 'sent'     && 'bg-blue-50 text-blue-700 border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700',
+                quote.status === 'accepted' && 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700',
+                quote.status === 'declined' && 'bg-red-50 text-red-700 border-red-300 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700',
+              )}
+            >
+              {quote.status === 'draft'    && <Clock className="w-3.5 h-3.5 flex-shrink-0" />}
+              {quote.status === 'sent'     && <Send className="w-3.5 h-3.5 flex-shrink-0" />}
+              {quote.status === 'accepted' && <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" />}
+              {quote.status === 'declined' && <XCircle className="w-3.5 h-3.5 flex-shrink-0" />}
+              {quote.status === 'draft'    && 'Draft'}
+              {quote.status === 'sent'     && 'Sent to Client'}
+              {quote.status === 'accepted' && 'Accepted'}
+              {quote.status === 'declined' && 'Declined'}
+            </button>
+
             <Button size="sm" asChild>
-              <Link href={`/calculator?edit=${quote.id}`}>
+              <Link href={`/quotes/${quote.id}/edit`}>
                 <Pencil className="w-4 h-4 mr-1.5" />
                 Edit Quote
               </Link>
@@ -283,25 +315,40 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
               </div>
             </div>
 
-            {/* Year 1/2/3 Summary */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="bg-secondary/50 rounded-lg p-4">
-                <p className="text-xs text-muted-foreground mb-1">Year 1 ex. VAT</p>
-                <p className="text-2xl font-bold">{formatCurrency(quote.totalYear1)}</p>
+            {/* Pricing Summary */}
+            {quote.quoteType === 'quote' ? (
+              /* Small Works — single price, no year projections */
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-secondary/50 rounded-lg p-4">
+                  <p className="text-xs text-muted-foreground mb-1">Total ex. VAT</p>
+                  <p className="text-2xl font-bold">{formatCurrency(quote.totalYear1)}</p>
+                </div>
+                <div className="bg-primary/10 rounded-lg p-4 border border-primary/20">
+                  <p className="text-xs text-muted-foreground mb-1">Total inc. VAT ({vatRate}%)</p>
+                  <p className="text-2xl font-bold text-primary">{formatCurrency(totalYear1IncVat)}</p>
+                </div>
               </div>
-              <div className="bg-primary/10 rounded-lg p-4 border border-primary/20">
-                <p className="text-xs text-muted-foreground mb-1">Year 1 inc. VAT ({vatRate}%)</p>
-                <p className="text-2xl font-bold text-primary">{formatCurrency(totalYear1IncVat)}</p>
+            ) : (
+              /* Tender — Year 1/2/3 projections */
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="bg-secondary/50 rounded-lg p-4">
+                  <p className="text-xs text-muted-foreground mb-1">Year 1 ex. VAT</p>
+                  <p className="text-2xl font-bold">{formatCurrency(quote.totalYear1)}</p>
+                </div>
+                <div className="bg-primary/10 rounded-lg p-4 border border-primary/20">
+                  <p className="text-xs text-muted-foreground mb-1">Year 1 inc. VAT ({vatRate}%)</p>
+                  <p className="text-2xl font-bold text-primary">{formatCurrency(totalYear1IncVat)}</p>
+                </div>
+                <div className="bg-secondary/50 rounded-lg p-4">
+                  <p className="text-xs text-muted-foreground mb-1">Year 2 (+{quote.annualAdjustmentPct}%)</p>
+                  <p className="text-2xl font-bold">{formatCurrency(quote.totalYear2)}</p>
+                </div>
+                <div className="bg-secondary/50 rounded-lg p-4">
+                  <p className="text-xs text-muted-foreground mb-1">Year 3 (+{quote.annualAdjustmentPct}%)</p>
+                  <p className="text-2xl font-bold">{formatCurrency(quote.totalYear3)}</p>
+                </div>
               </div>
-              <div className="bg-secondary/50 rounded-lg p-4">
-                <p className="text-xs text-muted-foreground mb-1">Year 2 (+{quote.annualAdjustmentPct}%)</p>
-                <p className="text-2xl font-bold">{formatCurrency(quote.totalYear2)}</p>
-              </div>
-              <div className="bg-secondary/50 rounded-lg p-4">
-                <p className="text-xs text-muted-foreground mb-1">Year 3 (+{quote.annualAdjustmentPct}%)</p>
-                <p className="text-2xl font-bold">{formatCurrency(quote.totalYear3)}</p>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
 

@@ -8,8 +8,8 @@ import { VISITS_PER_YEAR, DEFAULT_APP_SETTINGS } from './types'
 
 const KEYS = {
   RATE_CARDS:  'sfg20_rate_cards_v4',
-  QUOTES:      'sfg20_quotes_v5',
-  SEEDED:      'sfg20_seeded_v5',
+  QUOTES:      'sfg20_quotes_v6',
+  SEEDED:      'sfg20_seeded_v6',
   SETTINGS:    'sfg20_settings_v4',
   ROLE_RATES:  'sfg20_role_rates_v4',
   DRAFT_QUOTE: 'sfg20_draft_quote_v1',
@@ -623,6 +623,73 @@ function seed(): Quote[] {
       profitMarginPct: 17, annualAdjustmentPct: 2.5, vatRate: 20,
       notes: 'North East & Yorkshire BTR portfolio. Coordinated access via Casa by Moda tenancy team — minimum 24h notice.',
       createdBy: 'Grant Currie', daysAgo: 60, updatedDaysAgo: 15,
+    }),
+
+    // ── SW1: Small Work – Emergency Lighting Replacement, Clydebank ──
+    buildQuote({
+      id: 'demo-sw1', reference: 'SW-2026-001',
+      quoteType: 'quote', businessEntity: 'virtual_facilities_services',
+      clientName: 'Clyde Shopping Centre Ltd',
+      sites: [
+        { id: 'sw1a', name: 'Clyde Shopping Centre', address: '1 Clyde Retail Park, Clydebank, G81 2UA' },
+      ],
+      regionId: 'scotland', regionName: 'Scotland', status: 'sent',
+      assets: [
+        makeAsset('sw1-1','sw1a','electrical','Car Park Levels 1–3','Emergency Lighting Unit Replacement','Ansell',18,'SFG 56-10','Emergency Lighting – Monthly Function Test & Annual Duration Test',{'1M':0.5,'12M':4}),
+        makeAsset('sw1-2','sw1a','electrical','Main Switchroom','Distribution Board Inspection','Hager',2,'SFG 56-01','Distribution Board – Inspection & Thermographic Survey',{'12M':4}),
+      ],
+      mobilisationCosts: [
+        { id: 'swm1', description: 'Site survey & material procurement', quantity: 1, unit: 'Item', pricePerUnit: 350, applyMarkup: true, profitMarkup: 13.64 },
+      ],
+      supportCosts: [],
+      profitMarginPct: 20, annualAdjustmentPct: 0, vatRate: 20,
+      notes: 'Emergency lighting units in car park are end-of-life. Client requires like-for-like replacement with 3-hour duration units. All works to be completed in one visit outside trading hours (06:00–09:00).',
+      createdBy: 'Abraham Ayegba', daysAgo: 4, updatedDaysAgo: 1,
+    }),
+
+    // ── SW2: Small Work – Gas Boiler Service + Safety Check, Edinburgh ──
+    buildQuote({
+      id: 'demo-sw2', reference: 'SW-2026-002',
+      quoteType: 'quote', businessEntity: 'virtual_facilities_services',
+      clientName: 'Thistle Hotels Group',
+      sites: [
+        { id: 'sw2a', name: 'The Thistle Edinburgh', address: '107 Leith Street, Edinburgh, EH1 3SW' },
+      ],
+      regionId: 'scotland', regionName: 'Scotland', status: 'accepted',
+      assets: [
+        makeAsset('sw2-1','sw2a','gas','Basement Plant Room','Gas Boiler Annual Service','Ideal Logic',3,'SFG 05-01','Atmospheric Gas Burner – Free Standing Boiler',{'12M':3}),
+        makeAsset('sw2-2','sw2a','gas','Kitchen','CO Alarm Annual Check','N/A',4,'SFG 23-10','Carbon Monoxide Alarms – Residential and Domestic',{'12M':0.5}),
+      ],
+      mobilisationCosts: [
+        { id: 'swm2', description: 'Gas Safe engineer call-out (out of hours)', quantity: 1, unit: 'Item', pricePerUnit: 175, applyMarkup: true, profitMarkup: 13.64 },
+      ],
+      supportCosts: [],
+      profitMarginPct: 18, annualAdjustmentPct: 0, vatRate: 20,
+      notes: 'Annual gas service for 3 main boilers serving hotel heating and DHW system. Gas Safe CP12 landlord certificate required on completion. Access via duty manager — no CSCS required.',
+      createdBy: 'Abraham Ayegba', daysAgo: 10, updatedDaysAgo: 3,
+    }),
+
+    // ── SW3: Small Work – Fire Door Inspection, Glasgow Office ──
+    buildQuote({
+      id: 'demo-sw3', reference: 'SW-2026-003',
+      quoteType: 'quote', businessEntity: 'virtual_water_services',
+      clientName: 'Caledonian Property Management',
+      sites: [
+        { id: 'sw3a', name: '180 West Regent Street', address: '180 West Regent Street, Glasgow, G2 4RW' },
+      ],
+      regionId: 'scotland', regionName: 'Scotland', status: 'draft',
+      assets: [
+        makeAsset('sw3-1','sw3a','fabric','All Floors','Fire Door 6-Monthly Inspection','N/A',32,'SFG 20-01','Fire Doors',{'6M':1,'12M':2}),
+        makeAsset('sw3-2','sw3a','me','Common Areas','Fire Extinguisher Annual Service','N/A',10,'SFG 20-11','Fire Extinguishers – Carbon Dioxide',{'12M':0.25}),
+      ],
+      manualTasks: [
+        { id: 'sw3-mt1', siteId: 'sw3a', description: 'Fire door remedial works (broken closers / missing signage)', discipline: 'fabric', location: 'Floors 2–5', makeModel: 'N/A', quantity: 1, hoursPerVisit: 4, visitsPerYear: 1, efficiencyFactor: 1 },
+      ],
+      mobilisationCosts: [],
+      supportCosts: [],
+      profitMarginPct: 20, annualAdjustmentPct: 0, vatRate: 20,
+      notes: 'Post-survey remedial scope. 32 fire doors require 6-monthly FD30 inspection per BS 9999. Approx. 6 closers and 4 keep-open devices are defective — remedial allowance included. Report to be provided within 5 working days.',
+      createdBy: 'Grant Currie', daysAgo: 1, updatedDaysAgo: 0,
     }),
   ]
 }

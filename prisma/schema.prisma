@@ -1,5 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// =============================================================================
+// Pricing Platform — Prisma Schema
+// Stack: PostgreSQL · Prisma · Node.js · Express · TypeScript
+// =============================================================================
 
 generator client {
   provider = "prisma-client-js"
@@ -10,172 +12,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// USER & AUTHENTICATION
-// ──────────────────────────────────────────────────────────────────────────────
+// =============================================================================
+// ENUMS
+// =============================================================================
 
-model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String   // hashed with bcrypt
-  role      Role     @default(VIEWER)
-  initials  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  quotesCreated Quote[]
-  auditLogs     AuditLog[]
-
-  @@index([email])
-}
-
-enum Role {
+enum UserRole {
   ADMIN
   PRICING_MANAGER
   VIEWER
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// REGIONS & RATE CARDS
-// ──────────────────────────────────────────────────────────────────────────────
-
-model Region {
-  id   String @id
-  name String @unique
-
-  // Relations
-  rateCards RateCard[]
-  quotes    Quote[]
-
-  @@map("regions")
+enum BusinessEntity {
+  VFS  // Virtual Facility Services
+  VWS  // Virtual Water Services
 }
 
-model RateCard {
-  id                        String   @id @default(cuid())
-  regionId                  String
-  region                    Region   @relation(fields: [regionId], references: [id], onDelete: Cascade)
-  overheadAndProfitLabour   Float    @default(17) // percentage
-  overheadAndProfitMaterials Float   @default(17) // percentage
-  sfgEfficiencyIndex        Float    @default(1.0) // multiplier
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @updatedAt
-
-  // Relations
-  disciplineRates DisciplineRate[]
-  quotes          Quote[]
-
-  @@unique([regionId])
-  @@map("rate_cards")
-}
-
-model DisciplineRate {
-  id            String   @id @default(cuid())
-  rateCardId    String
-  rateCard      RateCard @relation(fields: [rateCardId], references: [id], onDelete: Cascade)
-  discipline    String   // 'electrical', 'mechanical', 'gas', 'ac_refrigeration', 'fabric', 'me', 'water_hygiene'
-  baseRate      Float    // direct labour cost per hour (prime cost)
-  salesRate     Float    // rate charged to client (base + overhead + profit)
-  ot15Rate      Float    // 1.5x overtime
-  ot2Rate       Float    // 2x overtime
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  @@unique([rateCardId, discipline])
-  @@map("discipline_rates")
-}
-
-// ──────────────────────────────────────────────────────────────────────────────
-// SFG20 TASK LIBRARY
-// ──────────────────────────────────────────────────────────────────────────────
-// Option: Store SFG20 tasks in the database for caching/reference, or call the 
-// SFG20 API on-demand. We recommend STORING for:
-// - Faster quote generation (no external API call per task)
-// - Version control (track changes to task hours over time)
-// - Audit trail (which SFG20 version was used for each quote)
-// - Resilience (work offline, don't fail if SFG20 API is down)
-// 
-// You can sync the table with SFG20 API on a scheduled job.
-
-model SFG20Task {
-  id           String   @id // e.g. "j-db-inspect"
-  code         String   @unique // e.g. "J1.10"
-  section      String   // e.g. "Electrical"
-  sectionCode  String   // e.g. "J"
-  discipline   String   // 'electrical', 'mechanical', etc.
-  description  String
-  notes        String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  // Relations
-  frequencyHours SFG20FrequencyHour[]
-  assetLines     AssetLine[]
-
-  @@index([discipline])
-  @@index([code])
-  @@map("sfg20_tasks")
-}
-
-model SFG20FrequencyHour {
-  id           String   @id @default(cuid())
-  sfg20TaskId  String
-  sfg20Task    SFG20Task @relation(fields: [sfg20TaskId], references: [id], onDelete: Cascade)
-  frequencyBand String   // '1W', '1M', '2M', '3M', '4M', '6M', '12M'
-  hoursPerVisit Float
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@unique([sfg20TaskId, frequencyBand])
-  @@map("sfg20_frequency_hours")
-}
-
-// ──────────────────────────────────────────────────────────────────────────────
-// QUOTE & ASSET LINES
-// ──────────────────────────────────────────────────────────────────────────────
-
-model Quote {
-  id                       String   @id @default(cuid())
-  reference                String   @unique
-  clientName               String
-  siteName                 String
-  siteAddress              String
-  regionId                 String
-  region                   Region   @relation(fields: [regionId], references: [id])
-  rateCardId               String
-  rateCard                 RateCard @relation(fields: [rateCardId], references: [id])
-  status                   QuoteStatus @default(DRAFT)
-  
-  // Calculated totals
-  ppmSubtotal              Float    @default(0) // labour cost of all PPM (before profit margin)
-  mobilisationTotal        Float    @default(0) // total of mobilisation (before overall profit margin)
-  supportTotal             Float    @default(0) // total of support (before overall profit margin)
-  subtotalBeforeMargin     Float    @default(0) // PPM + Mobilisation + Support (before profit margin)
-  profitMarginPct          Float    @default(17) // percentage
-  marginAmount             Float    @default(0) // calculated: subtotalBeforeMargin * profitMarginPct / 100
-  markupPct                Float    @default(0) // derived
-  annualAdjustmentPct      Float    @default(2) // percentage for year-on-year increases
-  totalYear1               Float    @default(0)
-  totalYear2               Float    @default(0)
-  totalYear3               Float    @default(0)
-  
-  notes                    String?
-  createdBy                String
-  user                     User     @relation("CreatedBy", fields: [createdBy], references: [id])
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime @updatedAt
-
-  // Relations
-  assetLines               AssetLine[]
-  mobilisationCosts        MobilisationCost[]
-  supportCosts             SupportCost[]
-  auditLogs                AuditLog[]
-
-  @@index([regionId])
-  @@index([status])
-  @@index([createdBy])
-  @@map("quotes")
+enum QuoteType {
+  TENDER // Long-term PPM contract with Year 1/2/3 projections
+  QUOTE  // One-off or small works, single price
 }
 
 enum QuoteStatus {
@@ -185,100 +39,385 @@ enum QuoteStatus {
   DECLINED
 }
 
-model AssetLine {
-  id               String   @id @default(cuid())
-  quoteId          String
-  quote            Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
-  
-  discipline       String   // 'electrical', 'mechanical', etc.
-  location         String
-  service          String   // e.g. "DB Inspection"
-  makeModel        String
-  quantity         Int
-  sfg20TaskId      String
-  sfg20Task        SFG20Task @relation(fields: [sfg20TaskId], references: [id])
-  
-  // Efficiency factors per band (default 1.0 = 100%)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+// Discipline determines which rate card row is used for pricing
+enum Discipline {
+  ELECTRICAL
+  MECHANICAL
+  GAS
+  AC_REFRIGERATION
+  FABRIC
+  ME               // M&E general
+  WATER_HYGIENE
+}
 
-  // Relations
-  efficiencyFactors AssetLineEfficiency[]
+// CriticalityLevel drives which frequency bands are active for an asset
+enum CriticalityLevel {
+  CRITICAL // Red  — Statutory & Mandatory (all bands)
+  HIGH     // Amber — Business Critical
+  MEDIUM   // Pink  — Recommended (quarterly+)
+  LOW      // Green — Low Priority (6M+)
+  CUSTOM   // User picks bands manually
+}
+
+// Normalised frequency bands matching the SFG20 task library
+enum FrequencyBand {
+  W1   // Every week
+  M1   // Monthly
+  M2   // Every 2 months
+  M3   // Quarterly
+  M4   // Every 4 months
+  M5   // Every 5 months
+  M6   // Half-yearly
+  M12  // Annual
+}
+
+// =============================================================================
+// USERS & SESSIONS
+// =============================================================================
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  initials     String    @db.VarChar(4)
+  passwordHash String
+  role         UserRole  @default(VIEWER)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  quotes       Quote[]
+  sessions     Session[]
+  auditLogs    AuditLog[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("sessions")
+}
+
+// =============================================================================
+// REGIONS & RATE CARDS
+// =============================================================================
+
+model Region {
+  id        String          @id          // e.g. "scotland"
+  name      String          @unique      // e.g. "Scotland"
+  createdAt DateTime        @default(now())
+
+  rateCard  RateCard?
+  quotes    Quote[]
+
+  @@map("regions")
+}
+
+// One rate card per region — holds overhead/efficiency settings
+model RateCard {
+  id                         String          @id @default(cuid())
+  regionId                   String          @unique
+  overheadAndProfitLabour    Decimal         @db.Decimal(6, 2) @default(17)
+  overheadAndProfitMaterials Decimal         @db.Decimal(6, 2) @default(17)
+  sfgEfficiencyIndex         Decimal         @db.Decimal(6, 4) @default(1)
+  updatedAt                  DateTime        @updatedAt
+
+  region          Region          @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  disciplineRates DisciplineRate[]
+
+  @@map("rate_cards")
+}
+
+// One row per discipline per rate card
+model DisciplineRate {
+  id         String     @id @default(cuid())
+  rateCardId String
+  discipline Discipline
+  baseRate   Decimal    @db.Decimal(10, 4) // internal cost £/hr
+  salesRate  Decimal    @db.Decimal(10, 4) // client-facing charge £/hr
+  ot15Rate   Decimal    @db.Decimal(10, 4) // overtime x1.5 £/hr
+  ot2Rate    Decimal    @db.Decimal(10, 4) // overtime x2.0 £/hr
+  updatedAt  DateTime   @updatedAt
+
+  rateCard   RateCard   @relation(fields: [rateCardId], references: [id], onDelete: Cascade)
+
+  @@unique([rateCardId, discipline])
+  @@map("discipline_rates")
+}
+
+// =============================================================================
+// SFG20 TASK LIBRARY
+// =============================================================================
+// Tasks are cached locally for speed, resilience, and audit trail.
+// A background job syncs this table from the SFG20 API on a schedule.
+
+model SFG20Task {
+  id          String     @id @default(cuid())
+  code        String     @unique           // e.g. "SFG 56-10"
+  section     String                       // e.g. "Electrical"
+  sectionCode String                       // e.g. "56"
+  description String
+  discipline  Discipline
+  notes       String?
+  syncedAt    DateTime?                    // last successful API sync
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  frequencyHours SFG20FrequencyHour[]
+  assetLines     AssetLine[]
+
+  @@index([discipline])
+  @@map("sfg20_tasks")
+}
+
+// Hours per visit for each frequency band — normalised from the SFG20 library
+model SFG20FrequencyHour {
+  id          String        @id @default(cuid())
+  taskId      String
+  band        FrequencyBand
+  hoursPerVisit Decimal     @db.Decimal(8, 4)
+
+  task        SFG20Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, band])
+  @@map("sfg20_frequency_hours")
+}
+
+// =============================================================================
+// QUOTES
+// =============================================================================
+
+model Quote {
+  id                   String         @id @default(cuid())
+  reference            String         @unique  // e.g. "QT-2025-001"
+  quoteType            QuoteType
+  businessEntity       BusinessEntity
+  clientName           String
+  regionId             String
+  status               QuoteStatus    @default(DRAFT)
+  profitMarginPct      Decimal        @db.Decimal(6, 2) @default(17)
+  annualAdjPct         Decimal        @db.Decimal(6, 2) @default(2)  // year-on-year uplift %
+  vatRate              Decimal        @db.Decimal(6, 2) @default(20)
+  notes                String?
+
+  // Computed summary totals — stored for fast list/dashboard queries
+  ppmSubtotal          Decimal        @db.Decimal(12, 2) @default(0)
+  manualSubtotal       Decimal        @db.Decimal(12, 2) @default(0)
+  mobilisationTotal    Decimal        @db.Decimal(12, 2) @default(0)
+  supportTotal         Decimal        @db.Decimal(12, 2) @default(0)
+  oneOffTotal          Decimal        @db.Decimal(12, 2) @default(0)
+  subtotalBeforeMargin Decimal        @db.Decimal(12, 2) @default(0)
+  marginAmount         Decimal        @db.Decimal(12, 2) @default(0)
+  vatAmount            Decimal        @db.Decimal(12, 2) @default(0)
+  totalYear1           Decimal        @db.Decimal(12, 2) @default(0)
+  totalYear2           Decimal        @db.Decimal(12, 2) @default(0)
+  totalYear3           Decimal        @db.Decimal(12, 2) @default(0)
+
+  createdById          String
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  region               Region         @relation(fields: [regionId], references: [id])
+  createdBy            User           @relation(fields: [createdById], references: [id])
+  sites                Site[]
+  assetLines           AssetLine[]
+  manualTasks          ManualTask[]
+  mobilisationCosts    MobilisationCost[]
+  supportCosts         SupportCost[]
+  oneOffCosts          OneOffCost[]
+  auditLogs            AuditLog[]
+
+  @@index([status])
+  @@index([clientName])
+  @@index([createdById])
+  @@index([createdAt])
+  @@map("quotes")
+}
+
+// =============================================================================
+// SITES
+// =============================================================================
+
+model Site {
+  id        String   @id @default(cuid())
+  quoteId   String
+  name      String
+  address   String
+  sortOrder Int      @default(0)
+
+  quote       Quote       @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  assetLines  AssetLine[]
+  manualTasks ManualTask[]
 
   @@index([quoteId])
-  @@index([sfg20TaskId])
+  @@map("sites")
+}
+
+// =============================================================================
+// ASSET LINES  (SFG20-driven PPM tasks)
+// =============================================================================
+
+model AssetLine {
+  id          String           @id @default(cuid())
+  quoteId     String
+  siteId      String
+  sfg20TaskId String
+  discipline  Discipline
+  location    String
+  service     String                          // asset name / display label
+  makeModel   String?
+  quantity    Int
+  criticality CriticalityLevel
+  annualCost  Decimal          @db.Decimal(12, 2) @default(0) // cached at save
+  sortOrder   Int              @default(0)
+
+  quote       Quote            @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  site        Site             @relation(fields: [siteId], references: [id])
+  sfg20Task   SFG20Task        @relation(fields: [sfg20TaskId], references: [id])
+  activeBands AssetLineBand[]
+  efficiencies AssetLineEfficiency[]
+
+  @@index([quoteId])
+  @@index([siteId])
   @@map("asset_lines")
 }
 
-model AssetLineEfficiency {
-  id             String   @id @default(cuid())
-  assetLineId    String
-  assetLine      AssetLine @relation(fields: [assetLineId], references: [id], onDelete: Cascade)
-  frequencyBand  String   // '1W', '1M', '2M', '3M', '4M', '6M', '12M'
-  efficiencyFactor Float  @default(1.0) // 1.0 = 100%, 1.2 = 120%, etc.
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+// Which frequency bands are active (included in pricing) for this line
+model AssetLineBand {
+  id          String        @id @default(cuid())
+  assetLineId String
+  band        FrequencyBand
 
-  @@unique([assetLineId, frequencyBand])
-  @@map("asset_line_efficiency")
+  assetLine   AssetLine     @relation(fields: [assetLineId], references: [id], onDelete: Cascade)
+
+  @@unique([assetLineId, band])
+  @@map("asset_line_bands")
 }
 
+// Per-band efficiency override (default 1.0 from the rate card)
+model AssetLineEfficiency {
+  id          String        @id @default(cuid())
+  assetLineId String
+  band        FrequencyBand
+  factor      Decimal       @db.Decimal(6, 4) @default(1)
+
+  assetLine   AssetLine     @relation(fields: [assetLineId], references: [id], onDelete: Cascade)
+
+  @@unique([assetLineId, band])
+  @@map("asset_line_efficiencies")
+}
+
+// =============================================================================
+// MANUAL TASKS  (non-SFG20 labour lines — user-defined)
+// =============================================================================
+
+model ManualTask {
+  id               String     @id @default(cuid())
+  quoteId          String
+  siteId           String
+  description      String
+  discipline       Discipline
+  location         String
+  makeModel        String?
+  quantity         Int
+  hoursPerVisit    Decimal    @db.Decimal(8, 4)
+  visitsPerYear    Decimal    @db.Decimal(6, 2)
+  efficiencyFactor Decimal    @db.Decimal(6, 4) @default(1)
+  annualCost       Decimal    @db.Decimal(12, 2) @default(0) // cached at save
+
+  quote            Quote      @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  site             Site       @relation(fields: [siteId], references: [id])
+
+  @@index([quoteId])
+  @@map("manual_tasks")
+}
+
+// =============================================================================
+// MOBILISATION COSTS
+// =============================================================================
+
 model MobilisationCost {
-  id             String   @id @default(cuid())
-  quoteId        String
-  quote          Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
-  
-  description    String
-  quantity       Int
-  unit           String
-  pricePerUnit   Float
-  applyMarkup    Boolean  @default(true)
-  profitMarkup   Float    @default(13.64) // percentage
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id           String   @id @default(cuid())
+  quoteId      String
+  description  String
+  quantity     Decimal  @db.Decimal(10, 4)
+  unit         String                         // "Days" | "Item" | "Week" etc.
+  pricePerUnit Decimal  @db.Decimal(10, 2)
+  applyMarkup  Boolean  @default(true)
+  profitMarkup Decimal  @db.Decimal(6, 2)    // % markup when applyMarkup=true
+
+  quote        Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
 
   @@index([quoteId])
   @@map("mobilisation_costs")
 }
 
+// =============================================================================
+// CONTRACT SUPPORT COSTS  (people overhead for running the contract)
+// =============================================================================
+
 model SupportCost {
-  id               String   @id @default(cuid())
-  quoteId          String
-  quote            Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
-  
-  position         String
-  daysRequiredPA   Int      // days per annum
-  fte              Float    // full-time equivalent
-  estimatedSalary  Float
-  car              Float
-  fuelEstimate     Float
-  niRate           Float    @default(15) // percentage
-  pensionRate      Float    @default(3) // percentage
-  employmentCost   Float    @default(0) // computed
-  shareOfTotal     Float    @default(0) // computed
-  profitMarkup     Float    @default(0) // percentage
-  costFactoredIn   Float    @default(0) // computed
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id              String   @id @default(cuid())
+  quoteId         String
+  position        String                       // e.g. "Contract Manager (0.25 FTE)"
+  daysRequiredPA  Decimal  @db.Decimal(8, 2)  // working days per annum
+  fte             Decimal  @db.Decimal(6, 4)  // e.g. 0.25
+  estimatedSalary Decimal  @db.Decimal(12, 2)
+  car             Decimal  @db.Decimal(10, 2) // annual car allowance
+  fuelEstimate    Decimal  @db.Decimal(10, 2)
+  niRate          Decimal  @db.Decimal(6, 4)  // e.g. 0.15  (15%)
+  pensionRate     Decimal  @db.Decimal(6, 4)  // e.g. 0.03  (3%)
+  employmentCost  Decimal  @db.Decimal(12, 2) // computed total employment cost
+  profitMarkup    Decimal  @db.Decimal(6, 2)
+
+  quote           Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
 
   @@index([quoteId])
   @@map("support_costs")
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
+// =============================================================================
+// ONE-OFF COSTS  (licences, CAFM, surveys etc.)
+// =============================================================================
+
+model OneOffCost {
+  id           String   @id @default(cuid())
+  quoteId      String
+  description  String
+  amount       Decimal  @db.Decimal(12, 2)
+  applyMarkup  Boolean  @default(false)
+  profitMarkup Decimal  @db.Decimal(6, 2) @default(0)
+  notes        String?
+
+  quote        Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@index([quoteId])
+  @@map("one_off_costs")
+}
+
+// =============================================================================
 // AUDIT LOG
-// ──────────────────────────────────────────────────────────────────────────────
+// =============================================================================
 
 model AuditLog {
   id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: SetNull)
   quoteId   String?
-  quote     Quote?   @relation(fields: [quoteId], references: [id], onDelete: SetNull)
-  action    String   // 'CREATE', 'UPDATE', 'DELETE', 'SEND', 'ACCEPT', etc.
-  entity    String   // 'Quote', 'AssetLine', 'RateCard', etc.
-  details   String?  // JSON stringified changes
+  action    String   // CREATE | UPDATE | DELETE | SEND | ACCEPT | DECLINE
+  entity    String   // Quote | AssetLine | RateCard | User …
+  payload   Json?    // before/after snapshot of changed fields
   createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  quote     Quote?   @relation(fields: [quoteId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([quoteId])

@@ -1,13 +1,13 @@
 'use client'
 
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import {
   SFG20_TASKS, SFG20_SECTIONS, DISCIPLINE_LABELS, DISCIPLINE_COLORS,
   REGIONS, DISCIPLINES,
 } from '@/lib/data'
 import {
-  getRateCard, saveQuote, getQuote, generateReference, calcAssetLine, calcManualTask,
+  getRateCard, saveQuote, generateReference, calcAssetLine, calcManualTask,
   FREQ_BANDS, getSettings, getRoleRates, saveDraftQuote, loadDraftQuote, clearDraftQuote,
 } from '@/lib/store'
 import type {
@@ -64,8 +64,6 @@ function emptyHours(): Record<FrequencyBand, number> {
 export default function CalculatorPage() {
   const { user } = useAuth()
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const editId = searchParams.get('edit')
   const settings = getSettings()
 
   // ── Quote metadata ──────────────────────────────────────────────────────────
@@ -77,9 +75,6 @@ export default function CalculatorPage() {
   const [annualAdjPct, setAnnualAdjPct] = useState(settings.defaultAnnualAdjustmentPct)
   const [vatRate] = useState(settings.vatRate)
   const [notes, setNotes] = useState('')
-  // Edit mode tracks original quote id and reference
-  const [editQuoteId, setEditQuoteId] = useState<string | null>(null)
-  const [editQuoteReference, setEditQuoteReference] = useState<string | null>(null)
 
   // ── Multi-site ───────────────────────────────────────────────────────────────
   const [sites, setSites] = useState<Site[]>([
@@ -129,6 +124,13 @@ export default function CalculatorPage() {
   const [customBands, setCustomBands] = useState<FrequencyBand[]>([])
   const [targetSiteId, setTargetSiteId] = useState<string>('')
 
+  // ── Edit SFG20 asset dialog ──────────────────────────────────────────────────
+  const [editAssetDialogOpen, setEditAssetDialogOpen] = useState(false)
+  const [editingAsset, setEditingAsset] = useState<AssetLine | null>(null)
+  const [editAssetDraft, setEditAssetDraft] = useState<Partial<AssetLine>>({})
+  const [editAssetCriticality, setEditAssetCriticality] = useState<CriticalityLevel>('critical')
+  const [editAssetCustomBands, setEditAssetCustomBands] = useState<FrequencyBand[]>([])
+
   // ── Manual task dialog ───────────────────────────────────────────────────────
   const [manualDialogOpen, setManualDialogOpen] = useState(false)
   const [draftManual, setDraftManual] = useState<Partial<ManualTask>>({})
@@ -157,32 +159,6 @@ export default function CalculatorPage() {
   useEffect(() => {
     if (hasMounted.current) return
     hasMounted.current = true
-
-    // Edit mode: load the existing quote
-    if (editId) {
-      const existing = getQuote(editId)
-      if (existing) {
-        setEditQuoteId(existing.id)
-        setEditQuoteReference(existing.reference)
-        setQuoteType(existing.quoteType ?? 'tender')
-        setBusinessEntity(existing.businessEntity ?? 'virtual_facilities_services')
-        setClientName(existing.clientName)
-        setRegionId(existing.regionId)
-        setProfitMarginPct(existing.profitMarginPct)
-        setAnnualAdjPct(existing.annualAdjustmentPct)
-        setNotes(existing.notes ?? '')
-        if (existing.sites && existing.sites.length > 0) {
-          setSites(existing.sites)
-          setActiveSiteId(existing.sites[0].id)
-        }
-        setAssetLines(existing.assetLines ?? [])
-        setManualTasks(existing.manualTasks ?? [])
-        setMobilisationCosts(existing.mobilisationCosts ?? [])
-        setSupportCosts(existing.supportCosts ?? [])
-        setOneOffCosts(existing.oneOffCosts ?? [])
-      }
-      return
-    }
 
     // New quote: try to restore draft
     const saved = loadDraftQuote()
@@ -292,6 +268,34 @@ export default function CalculatorPage() {
   function updateLineQty(id: string, qty: number) {
     if (qty < 1) return
     setAssetLines((prev) => prev.map((l) => l.id === id ? { ...l, quantity: qty } : l))
+  }
+
+  function openEditAsset(asset: AssetLine) {
+    setEditingAsset(asset)
+    setEditAssetDraft({ ...asset })
+    setEditAssetCriticality(asset.criticality)
+    setEditAssetCustomBands(asset.activeBands ?? [])
+    setEditAssetDialogOpen(true)
+  }
+
+  function saveEditedAsset() {
+    if (!editingAsset || !editAssetDraft) return
+    const availBands = FREQ_BANDS.filter((b) => ((editAssetDraft.sfgHours?.[b] ?? 0) > 0))
+    const activeBands =
+      editAssetCriticality === 'custom'
+        ? editAssetCustomBands
+        : getCriticalityBands(availBands, editAssetCriticality)
+    const updated: AssetLine = {
+      ...editingAsset,
+      ...editAssetDraft,
+      activeBands,
+      criticality: editAssetCriticality,
+      quantity: Number(editAssetDraft.quantity) || 1,
+      isManual: false,
+    } as AssetLine
+    setAssetLines((prev) => prev.map((l) => l.id === editingAsset.id ? updated : l))
+    setEditAssetDialogOpen(false)
+    setEditingAsset(null)
   }
 
   // ── Manual task actions ──────────────────────────────────────────────────────
@@ -543,11 +547,9 @@ export default function CalculatorPage() {
   function saveAsDraft() {
     if (!clientName.trim()) { alert('Please enter a client name.'); return }
     const region = REGIONS.find((r) => r.id === regionId)!
-    // In edit mode, preserve id, reference, createdAt, createdBy
-    const existingQuote = editQuoteId ? getQuote(editQuoteId) : null
     const quote: Quote = {
-      id: editQuoteId ?? Math.random().toString(36).slice(2),
-      reference: editQuoteReference ?? generateReference(quoteType),
+      id: Math.random().toString(36).slice(2),
+      reference: generateReference(quoteType),
       quoteType,
       businessEntity,
       clientName: clientName.trim(),
@@ -581,8 +583,8 @@ export default function CalculatorPage() {
       totalYear2IncVat: totalYear2 + totalYear2 * (vatRate / 100),
       totalYear3IncVat: totalYear3 + totalYear3 * (vatRate / 100),
       notes: notes.trim(),
-      createdBy: existingQuote?.createdBy ?? user?.name ?? 'Unknown',
-      createdAt: existingQuote?.createdAt ?? new Date().toISOString(),
+      createdBy: user?.name ?? 'Unknown',
+      createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
     saveQuote(quote)
@@ -633,29 +635,14 @@ export default function CalculatorPage() {
         {/* Header */}
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold">
-              {editQuoteId ? `Edit Quote` : "New Quote / Tender"}
-            </h1>
-            {editQuoteId && editQuoteReference && (
-              <p className="text-sm text-muted-foreground mt-0.5 font-mono">
-                {editQuoteReference}
-              </p>
-            )}
+            <h1 className="text-2xl sm:text-3xl font-bold">New Quote / Tender</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {editQuoteId
-                ? "Update the pricing document and save changes."
-                : "Build a pricing document from the SFG20 task library"}
+              Build a pricing document from the SFG20 task library
             </p>
           </div>
-          {editQuoteId && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => router.push(`/quotes/${editQuoteId}`)}
-            >
-              Cancel Edit
-            </Button>
-          )}
+          <Button variant="outline" size="sm" onClick={() => router.push('/quotes')}>
+            Cancel
+          </Button>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
@@ -1161,6 +1148,13 @@ export default function CalculatorPage() {
                                       </td>
                                       <td className="px-2 py-2.5">
                                         <div className="flex items-center justify-center gap-0.5">
+                                          <button
+                                            onClick={() => openEditAsset(line)}
+                                            className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-foreground"
+                                            title="Edit asset"
+                                          >
+                                            <Settings2 className="w-3 h-3" />
+                                          </button>
                                           <button
                                             onClick={() =>
                                               setDeleteConfirm({
@@ -1718,7 +1712,7 @@ export default function CalculatorPage() {
                 </div>
 
                 <Button onClick={saveAsDraft} className="w-full" size="sm">
-                  {editQuoteId ? "Save Changes" : "Save as Draft"}
+                  Save as Draft
                 </Button>
               </CardContent>
             </Card>
@@ -1976,6 +1970,114 @@ export default function CalculatorPage() {
             <Button onClick={confirmAdd} size="sm">
               Add to Register
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit SFG20 Asset Dialog */}
+      <Dialog open={editAssetDialogOpen} onOpenChange={setEditAssetDialogOpen}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit SFG20 Asset</DialogTitle>
+            {editingAsset && (
+              <DialogDescription>
+                {editingAsset.sfgCode} – {editingAsset.sfgDescription}
+              </DialogDescription>
+            )}
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            {(() => {
+              const availBands = FREQ_BANDS.filter((b) => (editAssetDraft.sfgHours?.[b] ?? 0) > 0)
+              return availBands.length > 0 ? (
+                <div className="p-3 rounded-md bg-secondary/40 space-y-2">
+                  <p className="font-semibold text-xs text-foreground">Hours per visit:</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {availBands.map((b) => (
+                      <div key={b} className="flex items-center gap-2">
+                        <Label className="text-xs w-20 flex-shrink-0">{BAND_LABELS[b]}</Label>
+                        <Input
+                          type="number" step="0.25" min="0" className="h-7 text-xs w-20"
+                          value={editAssetDraft.sfgHours?.[b] ?? 0}
+                          onChange={(e) => setEditAssetDraft({
+                            ...editAssetDraft,
+                            sfgHours: { ...(editAssetDraft.sfgHours ?? emptyHours()), [b]: Number(e.target.value) },
+                          })}
+                        />
+                        <span className="text-xs text-muted-foreground">h/visit</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null
+            })()}
+            {sites.length > 1 && (
+              <div>
+                <Label className="text-xs">Site</Label>
+                <Select value={editAssetDraft.siteId || ''} onValueChange={(v) => setEditAssetDraft({ ...editAssetDraft, siteId: v })}>
+                  <SelectTrigger className="mt-1 h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {sites.map((s, i) => (<SelectItem key={s.id} value={s.id}>{s.name || `Site ${i + 1}`}</SelectItem>))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            <div>
+              <Label className="text-xs">Name / Description</Label>
+              <Input value={editAssetDraft.sfgDescription || ''} onChange={(e) => setEditAssetDraft({ ...editAssetDraft, sfgDescription: e.target.value })} className="mt-1 h-8 text-xs" />
+            </div>
+            <div>
+              <Label className="text-xs">Location</Label>
+              <Input value={editAssetDraft.location || ''} onChange={(e) => setEditAssetDraft({ ...editAssetDraft, location: e.target.value })} placeholder="e.g. Plant Room" className="mt-1 h-8 text-xs" />
+            </div>
+            <div>
+              <Label className="text-xs">Make/Model</Label>
+              <Input value={editAssetDraft.makeModel || ''} onChange={(e) => setEditAssetDraft({ ...editAssetDraft, makeModel: e.target.value })} placeholder="e.g. Schneider" className="mt-1 h-8 text-xs" />
+            </div>
+            <div>
+              <Label className="text-xs">Quantity</Label>
+              <Input type="number" value={editAssetDraft.quantity || 1} onChange={(e) => setEditAssetDraft({ ...editAssetDraft, quantity: Number(e.target.value) })} min="1" className="mt-1 h-8 text-xs" />
+            </div>
+            <Separator />
+            <div>
+              <Label className="text-xs font-semibold block mb-1">Criticality Level</Label>
+              <div className="grid grid-cols-1 gap-2">
+                {(['critical', 'high', 'medium', 'low', 'custom'] as CriticalityLevel[]).map((level) => {
+                  const availBands = FREQ_BANDS.filter((b) => (editAssetDraft.sfgHours?.[b] ?? 0) > 0)
+                  const bands = level === 'custom' ? editAssetCustomBands : getCriticalityBands(availBands, level)
+                  const isSelected = editAssetCriticality === level
+                  return (
+                    <button key={level} onClick={() => setEditAssetCriticality(level)} className={cn('rounded-lg border-2 p-2.5 text-left transition-all w-full', isSelected ? cn('border-current', CRITICALITY_COLORS[level]) : 'border-border hover:border-primary/30 bg-background')}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className={cn('inline-block w-2.5 h-2.5 rounded-full flex-shrink-0', level === 'critical' && 'bg-red-500', level === 'high' && 'bg-amber-500', level === 'medium' && 'bg-pink-500', level === 'low' && 'bg-green-500', level === 'custom' && 'bg-secondary-foreground/40')} />
+                          <p className="text-xs font-semibold">{CRITICALITY_LABELS[level]}</p>
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {bands.map((b) => (<span key={b} className="text-xs bg-background/80 border rounded px-1 text-muted-foreground">{b}: {editAssetDraft.sfgHours?.[b] ?? 0}h</span>))}
+                        </div>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+              {editAssetCriticality === 'custom' && (
+                <div className="mt-2 space-y-1">
+                  <Label className="text-xs">Select active bands:</Label>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {FREQ_BANDS.filter((b) => (editAssetDraft.sfgHours?.[b] ?? 0) > 0).map((b) => (
+                      <label key={b} className="flex items-center gap-1.5 cursor-pointer">
+                        <Checkbox checked={editAssetCustomBands.includes(b)} onCheckedChange={(checked) => setEditAssetCustomBands((prev) => checked ? [...prev, b] : prev.filter((x) => x !== b))} />
+                        <span className="text-xs">{BAND_LABELS[b]} ({editAssetDraft.sfgHours?.[b] ?? 0}h)</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditAssetDialogOpen(false)} size="sm">Cancel</Button>
+            <Button onClick={saveEditedAsset} size="sm">Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

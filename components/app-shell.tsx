@@ -6,7 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import {
   LayoutDashboard, BookOpen, MapPin,
-  Calculator, FileText, ChevronRight, LogOut, Settings,
+  Calculator, FileText, ChevronRight, LogOut, Settings, Database,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
@@ -21,6 +21,7 @@ const NAV_ITEMS = [
   { href: '/rates', label: 'Regional Rates', icon: MapPin },
   { href: '/calculator', label: 'New Quote', icon: Calculator },
   { href: '/quotes', label: 'Quotes', icon: FileText },
+  { href: '/schema', label: 'DB Schema', icon: Database },
 ]
 
 export function AppShell({ children }: { children: React.ReactNode }) {

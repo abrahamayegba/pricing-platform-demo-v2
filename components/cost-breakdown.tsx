@@ -46,7 +46,7 @@ export function CostBreakdown({ assetLine, salesRate, disciplineLabel }: CostBre
 
       {/* Expanded Details */}
       {expanded && (
-        <div className="bg-secondary/30 px-4 pb-4 border-t space-y-4">
+        <div className="bg-secondary/30 px-4 pb-4 border-t space-y-4 py-4">
           {/* Asset Details */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
             <div>

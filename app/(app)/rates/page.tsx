@@ -151,7 +151,7 @@ export default function RatesPage() {
   }
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <div className="py-6 max-w-6xl mx-auto">
       <div className="mb-5">
         <h1 className="text-xl font-semibold">Rates</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
@@ -238,7 +238,7 @@ export default function RatesPage() {
               <CardContent>
                 {/* Global settings strip */}
                 {editingRegion === activeRegion ? (
-                  <div className="flex items-end gap-4 mb-4 p-3 bg-secondary/40 rounded-lg">
+                  <div className="flex items-end gap-4 mb-4 p-3 bg-secondary/40 rounded-lg -mt-3">
                     <div className="space-y-1">
                       <Label className="text-xs">Overhead &amp; Profit on Labour %</Label>
                       <div className="flex items-center gap-1.5">
@@ -267,7 +267,7 @@ export default function RatesPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-6 mb-4 px-3 py-2 bg-secondary/30 rounded-lg text-xs text-muted-foreground">
+                  <div className="flex items-center gap-6 mb-4 px-3 py-2 bg-secondary/30 rounded-lg text-xs text-muted-foreground -mt-3">
                     <span>
                       Overhead &amp; profit on labour:{' '}
                       <strong className="text-foreground">{currentCard.overheadAndProfitLabour}%</strong>
@@ -368,7 +368,7 @@ export default function RatesPage() {
             )}
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-[1fr_110px_110px_80px_80px_44px] text-xs font-medium text-muted-foreground bg-secondary/50 rounded-md px-3 py-2 mb-1">
+            <div className="grid grid-cols-[1fr_110px_110px_80px_80px_44px] text-xs font-medium text-muted-foreground bg-secondary/50 rounded-md px-3 py-2 mb-1 -mt-3">
               <span>Role / Position</span>
               <span className="text-right">Day Rate (Client)</span>
               <span className="text-right">Base Cost (Internal)</span>

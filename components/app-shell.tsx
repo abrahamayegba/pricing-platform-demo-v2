@@ -36,11 +36,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       <aside className="w-60 flex-shrink-0 bg-sidebar text-sidebar-foreground flex flex-col border-r border-sidebar-border">
-        <div className="flex items-center justify-center px-4 py-4 border-b border-sidebar-border">
+        <div className="flex items-center justify-center px-2 py-4 border-b border-sidebar-border">
           <Image
-            src="/virtual-fs-logo-dark.jpg"
-            alt="Virtual FS"
-            width={120}
+            src="/virtual-services-group-logo-main.svg"
+            alt="Virtual Services Group"
+            width={180}
             height={90}
             className="object-contain"
           />

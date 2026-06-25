@@ -607,17 +607,21 @@ export default function CalculatorPage() {
   }))
 
   return (
-    <div className="min-h-screen bg-background p-4 sm:p-6">
+    <div className="min-h-screen bg-background p-3 pt-6">
       <div className="max-w-6xl mx-auto">
         {/* Draft restore banner */}
         {draftRestoreBanner && (
           <div className="mb-4 flex items-center gap-3 rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 px-4 py-3 text-sm">
             <RotateCcw className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
             <span className="text-amber-900 dark:text-amber-200 flex-1">
-              <strong>Draft restored.</strong> Your previous unsaved work has been loaded automatically.
+              <strong>Draft restored.</strong> Your previous unsaved work has
+              been loaded automatically.
             </span>
             <button
-              onClick={() => { clearDraftQuote(); setDraftRestoreBanner(false) }}
+              onClick={() => {
+                clearDraftQuote();
+                setDraftRestoreBanner(false);
+              }}
               className="text-amber-700 dark:text-amber-300 hover:text-amber-900 dark:hover:text-amber-100 transition-colors"
               aria-label="Dismiss"
             >
@@ -630,17 +634,25 @@ export default function CalculatorPage() {
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold">
-              {editQuoteId ? `Edit Quote` : 'New Quote / Tender'}
+              {editQuoteId ? `Edit Quote` : "New Quote / Tender"}
             </h1>
             {editQuoteId && editQuoteReference && (
-              <p className="text-sm text-muted-foreground mt-0.5 font-mono">{editQuoteReference}</p>
+              <p className="text-sm text-muted-foreground mt-0.5 font-mono">
+                {editQuoteReference}
+              </p>
             )}
             <p className="text-sm text-muted-foreground mt-1">
-              {editQuoteId ? 'Update the pricing document and save changes.' : 'Build a pricing document from the SFG20 task library'}
+              {editQuoteId
+                ? "Update the pricing document and save changes."
+                : "Build a pricing document from the SFG20 task library"}
             </p>
           </div>
           {editQuoteId && (
-            <Button variant="outline" size="sm" onClick={() => router.push(`/quotes/${editQuoteId}`)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push(`/quotes/${editQuoteId}`)}
+            >
               Cancel Edit
             </Button>
           )}
@@ -649,30 +661,35 @@ export default function CalculatorPage() {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Left column */}
           <div className="flex-1 flex flex-col gap-4">
-
             {/* Quote Type + Business Entity */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Document Type & Business Entity</CardTitle>
+                <CardTitle className="text-base">
+                  Document Type & Business Entity
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Quote Type */}
                 <div>
                   <Label className="text-xs mb-2 block">Document Type</Label>
                   <div className="grid grid-cols-2 gap-3">
-                    {(['tender', 'quote'] as const).map((type) => (
+                    {(["tender", "quote"] as const).map((type) => (
                       <button
                         key={type}
                         onClick={() => setQuoteType(type)}
                         className={cn(
-                          'rounded-lg border-2 p-3 text-left transition-all',
+                          "rounded-lg border-2 p-3 text-left transition-all",
                           quoteType === type
-                            ? 'border-primary bg-primary/5'
-                            : 'border-border hover:border-primary/40'
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/40",
                         )}
                       >
-                        <p className="text-sm font-semibold">{QUOTE_TYPE_LABELS[type]}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{QUOTE_TYPE_DESCRIPTIONS[type]}</p>
+                        <p className="text-sm font-semibold">
+                          {QUOTE_TYPE_LABELS[type]}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                          {QUOTE_TYPE_DESCRIPTIONS[type]}
+                        </p>
                       </button>
                     ))}
                   </div>
@@ -681,21 +698,23 @@ export default function CalculatorPage() {
                 {/* Business Entity */}
                 <div>
                   <Label className="text-xs mb-2 block">Business Entity</Label>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {BUSINESS_ENTITIES.map((entity) => (
                       <button
                         key={entity}
                         onClick={() => setBusinessEntity(entity)}
                         className={cn(
-                          'rounded-lg border-2 p-2.5 text-left transition-all',
+                          "rounded-lg border-2 p-2.5 text-left transition-all",
                           businessEntity === entity
-                            ? 'border-primary bg-primary/5'
-                            : 'border-border hover:border-primary/40'
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/40",
                         )}
                       >
                         <div className="flex items-center gap-2">
                           <Building2 className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                          <p className="text-xs font-medium leading-tight">{BUSINESS_ENTITY_LABELS[entity]}</p>
+                          <p className="text-xs font-medium leading-tight">
+                            {BUSINESS_ENTITY_LABELS[entity]}
+                          </p>
                         </div>
                       </button>
                     ))}
@@ -713,17 +732,24 @@ export default function CalculatorPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="sm:col-span-2">
                     <Label className="text-xs">Client Name</Label>
-                    <Input value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="e.g. Canary Wharf Group" className="mt-1" />
+                    <Input
+                      value={clientName}
+                      onChange={(e) => setClientName(e.target.value)}
+                      placeholder="e.g. Canary Wharf Group"
+                      className="mt-1"
+                    />
                   </div>
-                  <div>
+                  <div className="sm:col-span-2">
                     <Label className="text-xs">Region</Label>
                     <Select value={regionId} onValueChange={setRegionId}>
-                      <SelectTrigger className="mt-1">
+                      <SelectTrigger className="mt-1 w-full">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         {REGIONS.map((r) => (
-                          <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
+                          <SelectItem key={r.id} value={r.id}>
+                            {r.name}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -737,7 +763,12 @@ export default function CalculatorPage() {
               <CardHeader className="pb-0">
                 <div className="flex items-center justify-between py-1">
                   <CardTitle className="text-base">Sites</CardTitle>
-                  <Button size="sm" variant="outline" className="h-7 text-xs" onClick={addSite}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-7 text-xs"
+                    onClick={addSite}
+                  >
                     <PlusCircle className="w-3 h-3 mr-1" />
                     Add Site
                   </Button>
@@ -748,8 +779,10 @@ export default function CalculatorPage() {
                   <div
                     key={site.id}
                     className={cn(
-                      'rounded-lg border-2 p-3 transition-all',
-                      activeSiteId === site.id ? 'border-primary bg-primary/5' : 'border-border'
+                      "rounded-lg border-2 p-3 transition-all",
+                      activeSiteId === site.id
+                        ? "border-primary bg-primary/5"
+                        : "border-border",
                     )}
                   >
                     <div className="flex items-center justify-between mb-2">
@@ -759,9 +792,17 @@ export default function CalculatorPage() {
                       >
                         <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
                         Site {idx + 1}
-                        {site.name && <span className="text-muted-foreground font-normal">— {site.name}</span>}
+                        {site.name && (
+                          <span className="text-muted-foreground font-normal">
+                            — {site.name}
+                          </span>
+                        )}
                         <Badge variant="outline" className="text-xs ml-1">
-                          {assetLines.filter((l) => l.siteId === site.id).length + manualTasks.filter((t) => t.siteId === site.id).length} tasks
+                          {assetLines.filter((l) => l.siteId === site.id)
+                            .length +
+                            manualTasks.filter((t) => t.siteId === site.id)
+                              .length}{" "}
+                          tasks
                         </Badge>
                       </button>
                       {sites.length > 1 && (
@@ -778,7 +819,9 @@ export default function CalculatorPage() {
                         <Label className="text-xs">Site Name</Label>
                         <Input
                           value={site.name}
-                          onChange={(e) => updateSite(site.id, 'name', e.target.value)}
+                          onChange={(e) =>
+                            updateSite(site.id, "name", e.target.value)
+                          }
                           placeholder="e.g. One Canada Square"
                           className="mt-1 h-8 text-xs"
                           onFocus={() => setActiveSiteId(site.id)}
@@ -788,7 +831,9 @@ export default function CalculatorPage() {
                         <Label className="text-xs">Address</Label>
                         <Input
                           value={site.address}
-                          onChange={(e) => updateSite(site.id, 'address', e.target.value)}
+                          onChange={(e) =>
+                            updateSite(site.id, "address", e.target.value)
+                          }
                           placeholder="Full address"
                           className="mt-1 h-8 text-xs"
                           onFocus={() => setActiveSiteId(site.id)}
@@ -807,27 +852,38 @@ export default function CalculatorPage() {
                 onClick={() => setBrowserOpen(!browserOpen)}
               >
                 <div className="flex items-center justify-between py-1">
-                  <CardTitle className="text-base">SFG20 Task Library</CardTitle>
-                  {browserOpen
-                    ? <ChevronUp className="w-4 h-4 text-muted-foreground" />
-                    : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                  <CardTitle className="text-base">
+                    SFG20 Task Library
+                  </CardTitle>
+                  {browserOpen ? (
+                    <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                  )}
                 </div>
               </CardHeader>
               {browserOpen && (
                 <CardContent className="pt-3">
                   <div className="flex items-center gap-2 mb-2 px-2 py-1.5 rounded-md bg-secondary/40 text-xs text-muted-foreground">
                     <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-                    Adding tasks to: <span className="font-semibold text-foreground ml-1">
-                      {sites.find((s) => s.id === activeSiteId)?.name || `Site ${sites.findIndex((s) => s.id === activeSiteId) + 1}`}
+                    Adding tasks to:{" "}
+                    <span className="font-semibold text-foreground ml-1">
+                      {sites.find((s) => s.id === activeSiteId)?.name ||
+                        `Site ${sites.findIndex((s) => s.id === activeSiteId) + 1}`}
                     </span>
                     {sites.length > 1 && (
-                      <Select value={activeSiteId} onValueChange={setActiveSiteId}>
-                        <SelectTrigger className="h-6 text-xs ml-auto w-36">
+                      <Select
+                        value={activeSiteId}
+                        onValueChange={setActiveSiteId}
+                      >
+                        <SelectTrigger className="h-6 text-xs ml-auto w-">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           {sites.map((s, i) => (
-                            <SelectItem key={s.id} value={s.id}>{s.name || `Site ${i + 1}`}</SelectItem>
+                            <SelectItem key={s.id} value={s.id}>
+                              {s.name || `Site ${i + 1}`}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -847,29 +903,39 @@ export default function CalculatorPage() {
                       <button
                         onClick={() => setActiveSection(null)}
                         className={cn(
-                          'px-2.5 py-0.5 rounded-full text-xs border transition-colors',
+                          "px-2.5 py-0.5 rounded-full text-xs border transition-colors",
                           !activeSection
-                            ? 'bg-primary text-primary-foreground border-primary'
-                            : 'border-border text-muted-foreground hover:border-primary/50'
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "border-border text-muted-foreground hover:border-primary/50",
                         )}
-                      >All</button>
+                      >
+                        All
+                      </button>
                       {SFG20_SECTIONS.map((s) => (
                         <button
                           key={s.code}
-                          onClick={() => setActiveSection(activeSection === s.code ? null : s.code)}
+                          onClick={() =>
+                            setActiveSection(
+                              activeSection === s.code ? null : s.code,
+                            )
+                          }
                           className={cn(
-                            'px-2.5 py-0.5 rounded-full text-xs border transition-colors',
+                            "px-2.5 py-0.5 rounded-full text-xs border transition-colors",
                             activeSection === s.code
-                              ? 'bg-primary text-primary-foreground border-primary'
-                              : 'border-border text-muted-foreground hover:border-primary/50'
+                              ? "bg-primary text-primary-foreground border-primary"
+                              : "border-border text-muted-foreground hover:border-primary/50",
                           )}
-                        >{s.code} – {s.name}</button>
+                        >
+                          {s.code} – {s.name}
+                        </button>
                       ))}
                     </div>
                   </div>
                   <div className="max-h-60 overflow-y-auto divide-y border rounded-md">
                     {filteredTasks.map((task) => {
-                      const activeBands = FREQ_BANDS.filter((b) => (task.sfgHours[b] ?? 0) > 0)
+                      const activeBands = FREQ_BANDS.filter(
+                        (b) => (task.sfgHours[b] ?? 0) > 0,
+                      );
                       return (
                         <div
                           key={task.id}
@@ -877,15 +943,32 @@ export default function CalculatorPage() {
                         >
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-mono text-xs text-muted-foreground">{task.code}</span>
-                              <span className="text-sm truncate">{task.description}</span>
+                              <span className="font-mono text-xs text-muted-foreground">
+                                {task.code}
+                              </span>
+                              <span className="text-sm truncate">
+                                {task.description}
+                              </span>
                             </div>
                             <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                              <Badge variant="outline" className={cn('text-xs py-0', DISCIPLINE_COLORS[task.discipline])}>
-                                {DISCIPLINE_LABELS[task.discipline].split(' ')[0]}
+                              <Badge
+                                variant="outline"
+                                className={cn(
+                                  "text-xs py-0",
+                                  DISCIPLINE_COLORS[task.discipline],
+                                )}
+                              >
+                                {
+                                  DISCIPLINE_LABELS[task.discipline].split(
+                                    " ",
+                                  )[0]
+                                }
                               </Badge>
                               {activeBands.map((b) => (
-                                <span key={b} className="text-xs text-muted-foreground">
+                                <span
+                                  key={b}
+                                  className="text-xs text-muted-foreground"
+                                >
                                   {BAND_LABELS[b]}: {task.sfgHours[b]}h
                                 </span>
                               ))}
@@ -901,10 +984,12 @@ export default function CalculatorPage() {
                             Add
                           </Button>
                         </div>
-                      )
+                      );
                     })}
                     {filteredTasks.length === 0 && (
-                      <p className="px-4 py-6 text-sm text-muted-foreground text-center">No tasks match your search.</p>
+                      <p className="px-4 py-6 text-sm text-muted-foreground text-center">
+                        No tasks match your search.
+                      </p>
                     )}
                   </div>
                 </CardContent>
@@ -917,12 +1002,18 @@ export default function CalculatorPage() {
                 <div className="flex items-center justify-between py-1">
                   <CardTitle className="text-base">Asset Register</CardTitle>
                   <div className="flex items-center gap-2">
-                    <Button size="sm" variant="outline" className="h-7 text-xs" onClick={openAddManual}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 text-xs"
+                      onClick={openAddManual}
+                    >
                       <Plus className="w-3 h-3 mr-1" />
                       Non-SFG20 Task
                     </Button>
                     <span className="text-xs text-muted-foreground">
-                      {assetLines.length + manualTasks.length} task{(assetLines.length + manualTasks.length) !== 1 ? 's' : ''}
+                      {assetLines.length + manualTasks.length} task
+                      {assetLines.length + manualTasks.length !== 1 ? "s" : ""}
                     </span>
                   </div>
                 </div>
@@ -930,113 +1021,257 @@ export default function CalculatorPage() {
               <CardContent className="p-0 mt-2">
                 {assetLines.length === 0 && manualTasks.length === 0 ? (
                   <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-                    No tasks added yet. Use the SFG20 library above or add a non-SFG20 task.
+                    No tasks added yet. Use the SFG20 library above or add a
+                    non-SFG20 task.
                   </div>
                 ) : (
                   <div className="divide-y">
                     {assetsBySite.map(({ site, lines, manuals }) => {
-                      if (lines.length === 0 && manuals.length === 0) return null
-                      const siteCost = lines.reduce((s, c) => s + c.annualCost, 0) + manuals.reduce((s, c) => s + c.annualCost, 0)
+                      if (lines.length === 0 && manuals.length === 0)
+                        return null;
+                      const siteCost =
+                        lines.reduce((s, c) => s + c.annualCost, 0) +
+                        manuals.reduce((s, c) => s + c.annualCost, 0);
                       return (
                         <div key={site.id}>
                           <div className="px-4 py-2 bg-secondary/30 flex items-center gap-2">
                             <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
-                            <span className="text-xs font-semibold">{site.name || `Site ${sites.indexOf(site) + 1}`}</span>
-                            {site.address && <span className="text-xs text-muted-foreground">{site.address}</span>}
-                            <span className="ml-auto text-xs font-semibold">{formatCurrency(siteCost)}</span>
+                            <span className="text-xs font-semibold">
+                              {site.name || `Site ${sites.indexOf(site) + 1}`}
+                            </span>
+                            {site.address && (
+                              <span className="text-xs text-muted-foreground">
+                                {site.address}
+                              </span>
+                            )}
+                            <span className="ml-auto text-xs font-semibold">
+                              {formatCurrency(siteCost)}
+                            </span>
                           </div>
                           <div className="overflow-x-auto">
                             <table className="w-full text-sm">
                               <thead>
                                 <tr className="border-y bg-secondary/20">
-                                  <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground">Service</th>
-                                  <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground">Location</th>
-                                  <th className="text-center px-2 py-2 text-xs font-medium text-muted-foreground">Disc.</th>
-                                  <th className="text-center px-2 py-2 text-xs font-medium text-muted-foreground">Qty</th>
-                                  <th className="text-center px-2 py-2 text-xs font-medium text-muted-foreground">Criticality</th>
-                                  <th className="text-right px-3 py-2 text-xs font-medium text-muted-foreground">Hours/yr</th>
-                                  <th className="text-right px-3 py-2 text-xs font-medium text-muted-foreground">Cost/yr</th>
-                                  <th className="text-center px-2 py-2 text-xs font-medium text-muted-foreground">Acts</th>
+                                  <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground">
+                                    Service
+                                  </th>
+                                  <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground">
+                                    Location
+                                  </th>
+                                  <th className="text-center px-2 py-2 text-xs font-medium text-muted-foreground">
+                                    Disc.
+                                  </th>
+                                  <th className="text-center px-2 py-2 text-xs font-medium text-muted-foreground">
+                                    Qty
+                                  </th>
+                                  <th className="text-center px-2 py-2 text-xs font-medium text-muted-foreground">
+                                    Criticality
+                                  </th>
+                                  <th className="text-right px-3 py-2 text-xs font-medium text-muted-foreground">
+                                    Hours/yr
+                                  </th>
+                                  <th className="text-right px-3 py-2 text-xs font-medium text-muted-foreground">
+                                    Cost/yr
+                                  </th>
+                                  <th className="text-center px-2 py-2 text-xs font-medium text-muted-foreground">
+                                    Acts
+                                  </th>
                                 </tr>
                               </thead>
                               <tbody className="divide-y">
-                                {lines.map(({ line, totalFlexedHours, annualCost }) => (
-                                  <tr key={line.id} className="hover:bg-secondary/20 transition-colors">
-                                    <td className="px-3 py-2.5">
-                                      <div className="text-xs font-medium truncate max-w-[180px]">{line.sfgDescription}</div>
-                                      <div className="text-xs text-muted-foreground font-mono">{line.sfgCode}</div>
-                                    </td>
-                                    <td className="px-3 py-2.5 text-xs truncate">{line.location || '—'}</td>
-                                    <td className="px-2 py-2.5 text-center">
-                                      <Badge variant="outline" className={cn('text-xs py-0 px-1', DISCIPLINE_COLORS[line.discipline])}>
-                                        {DISCIPLINE_LABELS[line.discipline].split(' ')[0]}
-                                      </Badge>
-                                    </td>
-                                    <td className="px-2 py-2.5">
-                                      <div className="flex items-center justify-center gap-0.5">
-                                        <button onClick={() => updateLineQty(line.id, line.quantity - 1)} className="w-4 h-4 text-xs">−</button>
-                                        <span className="text-xs font-medium w-4 text-center">{line.quantity}</span>
-                                        <button onClick={() => updateLineQty(line.id, line.quantity + 1)} className="w-4 h-4 text-xs">+</button>
-                                      </div>
-                                    </td>
-                                    <td className="px-2 py-2.5 text-center">
-                                      <Badge variant="outline" className={cn('text-xs py-0', CRITICALITY_COLORS[line.criticality])}>
-                                        {CRITICALITY_SHORT[line.criticality]}
-                                      </Badge>
-                                    </td>
-                                    <td className="px-3 py-2.5 text-right text-xs font-medium">{totalFlexedHours.toFixed(1)}h</td>
-                                    <td className="px-3 py-2.5 text-right text-xs font-semibold">{formatCurrency(annualCost)}</td>
-                                    <td className="px-2 py-2.5">
-                                      <div className="flex items-center justify-center gap-0.5">
-                                        <button onClick={() => setDeleteConfirm({ type: 'asset', id: line.id })} className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-destructive">
-                                          <Trash2 className="w-3 h-3" />
-                                        </button>
-                                      </div>
-                                    </td>
-                                  </tr>
-                                ))}
-                                {manuals.map(({ task, annualHours, annualCost }) => (
-                                  <tr key={task.id} className="hover:bg-secondary/20 transition-colors bg-amber-50/30">
-                                    <td className="px-3 py-2.5">
-                                      <div className="text-xs font-medium truncate max-w-[180px]">{task.description}</div>
-                                      <div className="text-xs text-muted-foreground">Manual · {task.hoursPerVisit}h × {task.visitsPerYear}/yr</div>
-                                    </td>
-                                    <td className="px-3 py-2.5 text-xs truncate">{task.location || '—'}</td>
-                                    <td className="px-2 py-2.5 text-center">
-                                      <Badge variant="outline" className={cn('text-xs py-0 px-1', DISCIPLINE_COLORS[task.discipline])}>
-                                        {DISCIPLINE_LABELS[task.discipline].split(' ')[0]}
-                                      </Badge>
-                                    </td>
-                                    <td className="px-2 py-2.5 text-center text-xs">{task.quantity}</td>
-                                    <td className="px-2 py-2.5 text-center">
-                                      <Badge variant="outline" className="text-xs py-0 bg-amber-50 text-amber-700 border-amber-200">Non-SFG20</Badge>
-                                    </td>
-                                    <td className="px-3 py-2.5 text-right text-xs font-medium">{annualHours.toFixed(1)}h</td>
-                                    <td className="px-3 py-2.5 text-right text-xs font-semibold">{formatCurrency(annualCost)}</td>
-                                    <td className="px-2 py-2.5">
-                                      <div className="flex items-center justify-center gap-0.5">
-                                        <button onClick={() => editManual(task)} className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-foreground">
-                                          <Settings2 className="w-3 h-3" />
-                                        </button>
-                                        <button onClick={() => setDeleteConfirm({ type: 'manual', id: task.id })} className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-destructive">
-                                          <Trash2 className="w-3 h-3" />
-                                        </button>
-                                      </div>
-                                    </td>
-                                  </tr>
-                                ))}
+                                {lines.map(
+                                  ({ line, totalFlexedHours, annualCost }) => (
+                                    <tr
+                                      key={line.id}
+                                      className="hover:bg-secondary/20 transition-colors"
+                                    >
+                                      <td className="px-3 py-2.5">
+                                        <div className="text-xs font-medium truncate max-w-[180px]">
+                                          {line.sfgDescription}
+                                        </div>
+                                        <div className="text-xs text-muted-foreground font-mono">
+                                          {line.sfgCode}
+                                        </div>
+                                      </td>
+                                      <td className="px-3 py-2.5 text-xs truncate">
+                                        {line.location || "—"}
+                                      </td>
+                                      <td className="px-2 py-2.5 text-center">
+                                        <Badge
+                                          variant="outline"
+                                          className={cn(
+                                            "text-xs py-0 px-1",
+                                            DISCIPLINE_COLORS[line.discipline],
+                                          )}
+                                        >
+                                          {
+                                            DISCIPLINE_LABELS[
+                                              line.discipline
+                                            ].split(" ")[0]
+                                          }
+                                        </Badge>
+                                      </td>
+                                      <td className="px-2 py-2.5">
+                                        <div className="flex items-center justify-center gap-0.5">
+                                          <button
+                                            onClick={() =>
+                                              updateLineQty(
+                                                line.id,
+                                                line.quantity - 1,
+                                              )
+                                            }
+                                            className="w-4 h-4 text-xs"
+                                          >
+                                            −
+                                          </button>
+                                          <span className="text-xs font-medium w-4 text-center">
+                                            {line.quantity}
+                                          </span>
+                                          <button
+                                            onClick={() =>
+                                              updateLineQty(
+                                                line.id,
+                                                line.quantity + 1,
+                                              )
+                                            }
+                                            className="w-4 h-4 text-xs"
+                                          >
+                                            +
+                                          </button>
+                                        </div>
+                                      </td>
+                                      <td className="px-2 py-2.5 text-center">
+                                        <Badge
+                                          variant="outline"
+                                          className={cn(
+                                            "text-xs py-0",
+                                            CRITICALITY_COLORS[
+                                              line.criticality
+                                            ],
+                                          )}
+                                        >
+                                          {CRITICALITY_SHORT[line.criticality]}
+                                        </Badge>
+                                      </td>
+                                      <td className="px-3 py-2.5 text-right text-xs font-medium">
+                                        {totalFlexedHours.toFixed(1)}h
+                                      </td>
+                                      <td className="px-3 py-2.5 text-right text-xs font-semibold">
+                                        {formatCurrency(annualCost)}
+                                      </td>
+                                      <td className="px-2 py-2.5">
+                                        <div className="flex items-center justify-center gap-0.5">
+                                          <button
+                                            onClick={() =>
+                                              setDeleteConfirm({
+                                                type: "asset",
+                                                id: line.id,
+                                              })
+                                            }
+                                            className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-destructive"
+                                          >
+                                            <Trash2 className="w-3 h-3" />
+                                          </button>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  ),
+                                )}
+                                {manuals.map(
+                                  ({ task, annualHours, annualCost }) => (
+                                    <tr
+                                      key={task.id}
+                                      className="hover:bg-secondary/20 transition-colors bg-amber-50/30"
+                                    >
+                                      <td className="px-3 py-2.5">
+                                        <div className="text-xs font-medium truncate max-w-[180px]">
+                                          {task.description}
+                                        </div>
+                                        <div className="text-xs text-muted-foreground">
+                                          Manual · {task.hoursPerVisit}h ×{" "}
+                                          {task.visitsPerYear}/yr
+                                        </div>
+                                      </td>
+                                      <td className="px-3 py-2.5 text-xs truncate">
+                                        {task.location || "—"}
+                                      </td>
+                                      <td className="px-2 py-2.5 text-center">
+                                        <Badge
+                                          variant="outline"
+                                          className={cn(
+                                            "text-xs py-0 px-1",
+                                            DISCIPLINE_COLORS[task.discipline],
+                                          )}
+                                        >
+                                          {
+                                            DISCIPLINE_LABELS[
+                                              task.discipline
+                                            ].split(" ")[0]
+                                          }
+                                        </Badge>
+                                      </td>
+                                      <td className="px-2 py-2.5 text-center text-xs">
+                                        {task.quantity}
+                                      </td>
+                                      <td className="px-2 py-2.5 text-center">
+                                        <Badge
+                                          variant="outline"
+                                          className="text-xs py-0 bg-amber-50 text-amber-700 border-amber-200"
+                                        >
+                                          Non-SFG20
+                                        </Badge>
+                                      </td>
+                                      <td className="px-3 py-2.5 text-right text-xs font-medium">
+                                        {annualHours.toFixed(1)}h
+                                      </td>
+                                      <td className="px-3 py-2.5 text-right text-xs font-semibold">
+                                        {formatCurrency(annualCost)}
+                                      </td>
+                                      <td className="px-2 py-2.5">
+                                        <div className="flex items-center justify-center gap-0.5">
+                                          <button
+                                            onClick={() => editManual(task)}
+                                            className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-foreground"
+                                          >
+                                            <Settings2 className="w-3 h-3" />
+                                          </button>
+                                          <button
+                                            onClick={() =>
+                                              setDeleteConfirm({
+                                                type: "manual",
+                                                id: task.id,
+                                              })
+                                            }
+                                            className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-destructive"
+                                          >
+                                            <Trash2 className="w-3 h-3" />
+                                          </button>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  ),
+                                )}
                               </tbody>
                               <tfoot>
                                 <tr className="bg-secondary/40 border-t">
-                                  <td colSpan={6} className="px-3 py-2 text-right text-sm font-semibold">Total PPM</td>
-                                  <td className="px-3 py-2 text-right text-sm font-bold">{formatCurrency(ppmSubtotal + manualTaskSubtotal)}</td>
+                                  <td
+                                    colSpan={6}
+                                    className="px-3 py-2 text-right text-sm font-semibold"
+                                  >
+                                    Total PPM
+                                  </td>
+                                  <td className="px-3 py-2 text-right text-sm font-bold">
+                                    {formatCurrency(
+                                      ppmSubtotal + manualTaskSubtotal,
+                                    )}
+                                  </td>
                                   <td />
                                 </tr>
                               </tfoot>
                             </table>
                           </div>
                         </div>
-                      )
+                      );
                     })}
                   </div>
                 )}
@@ -1047,8 +1282,15 @@ export default function CalculatorPage() {
             <Card>
               <CardHeader className="pb-0">
                 <div className="flex items-center justify-between py-1">
-                  <CardTitle className="text-base">Mobilisation Costs</CardTitle>
-                  <Button size="sm" variant="outline" className="h-7 text-xs" onClick={openAddMobilisation}>
+                  <CardTitle className="text-base">
+                    Mobilisation Costs
+                  </CardTitle>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-7 text-xs"
+                    onClick={openAddMobilisation}
+                  >
                     <Plus className="w-3 h-3 mr-1" />
                     Add Cost
                   </Button>
@@ -1056,45 +1298,82 @@ export default function CalculatorPage() {
               </CardHeader>
               <CardContent className="p-0 mt-2">
                 {mobilisationCosts.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-sm text-muted-foreground">No mobilisation costs added.</div>
+                  <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+                    No mobilisation costs added.
+                  </div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-y bg-secondary/50">
-                          <th className="text-left px-4 py-2 text-xs font-medium">Description</th>
-                          <th className="text-right px-4 py-2 text-xs font-medium">Qty</th>
-                          <th className="text-right px-4 py-2 text-xs font-medium">Unit Price</th>
-                          <th className="text-right px-4 py-2 text-xs font-medium">Total</th>
-                          <th className="text-center px-2 py-2 text-xs font-medium">Acts</th>
+                          <th className="text-left px-4 py-2 text-xs font-medium">
+                            Description
+                          </th>
+                          <th className="text-right px-4 py-2 text-xs font-medium">
+                            Qty
+                          </th>
+                          <th className="text-right px-4 py-2 text-xs font-medium">
+                            Unit Price
+                          </th>
+                          <th className="text-right px-4 py-2 text-xs font-medium">
+                            Total
+                          </th>
+                          <th className="text-center px-2 py-2 text-xs font-medium">
+                            Acts
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y">
                         {mobilisationCosts.map((m) => {
-                          const base = m.quantity * m.pricePerUnit
-                          const total = m.applyMarkup ? base * (1 + m.profitMarkup / 100) : base
+                          const base = m.quantity * m.pricePerUnit;
+                          const total = m.applyMarkup
+                            ? base * (1 + m.profitMarkup / 100)
+                            : base;
                           return (
                             <tr key={m.id} className="hover:bg-secondary/20">
-                              <td className="px-4 py-2 text-xs">{m.description}</td>
-                              <td className="px-4 py-2 text-right text-xs">{m.quantity}</td>
-                              <td className="px-4 py-2 text-right text-xs">{formatCurrency(m.pricePerUnit)}</td>
-                              <td className="px-4 py-2 text-right text-xs font-semibold">{formatCurrency(total)}</td>
+                              <td className="px-4 py-2 text-xs">
+                                {m.description}
+                              </td>
+                              <td className="px-4 py-2 text-right text-xs">
+                                {m.quantity}
+                              </td>
+                              <td className="px-4 py-2 text-right text-xs">
+                                {formatCurrency(m.pricePerUnit)}
+                              </td>
+                              <td className="px-4 py-2 text-right text-xs font-semibold">
+                                {formatCurrency(total)}
+                              </td>
                               <td className="px-2 py-2">
                                 <div className="flex items-center justify-center gap-0.5">
-                                  <button onClick={() => editMobilisation(m)} className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-foreground">
+                                  <button
+                                    onClick={() => editMobilisation(m)}
+                                    className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-foreground"
+                                  >
                                     <Settings2 className="w-3 h-3" />
                                   </button>
-                                  <button onClick={() => setDeleteConfirm({ type: 'mob', id: m.id })} className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-destructive">
+                                  <button
+                                    onClick={() =>
+                                      setDeleteConfirm({
+                                        type: "mob",
+                                        id: m.id,
+                                      })
+                                    }
+                                    className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-destructive"
+                                  >
                                     <Trash2 className="w-3 h-3" />
                                   </button>
                                 </div>
                               </td>
                             </tr>
-                          )
+                          );
                         })}
                         <tr className="bg-secondary/40 border-t font-semibold text-sm">
-                          <td colSpan={3} className="px-4 py-2 text-right">Total</td>
-                          <td className="px-4 py-2 text-right">{formatCurrency(mobilisationTotal)}</td>
+                          <td colSpan={3} className="px-4 py-2 text-right">
+                            Total
+                          </td>
+                          <td className="px-4 py-2 text-right">
+                            {formatCurrency(mobilisationTotal)}
+                          </td>
                           <td />
                         </tr>
                       </tbody>
@@ -1109,7 +1388,12 @@ export default function CalculatorPage() {
               <CardHeader className="pb-0">
                 <div className="flex items-center justify-between py-1">
                   <CardTitle className="text-base">One-Off Costs</CardTitle>
-                  <Button size="sm" variant="outline" className="h-7 text-xs" onClick={openAddOneOff}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-7 text-xs"
+                    onClick={openAddOneOff}
+                  >
                     <Plus className="w-3 h-3 mr-1" />
                     Add
                   </Button>
@@ -1118,43 +1402,75 @@ export default function CalculatorPage() {
               <CardContent className="p-0 mt-2">
                 {oneOffCosts.length === 0 ? (
                   <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-                    No one-off costs added. Add licence fees, Simpro, SFG20 subscriptions, etc.
+                    No one-off costs added. Add licence fees, Simpro, SFG20
+                    subscriptions, etc.
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-y bg-secondary/50">
-                          <th className="text-left px-4 py-2 text-xs font-medium">Description</th>
-                          <th className="text-left px-4 py-2 text-xs font-medium">Notes</th>
-                          <th className="text-right px-4 py-2 text-xs font-medium">Amount</th>
-                          <th className="text-center px-2 py-2 text-xs font-medium">Acts</th>
+                          <th className="text-left px-4 py-2 text-xs font-medium">
+                            Description
+                          </th>
+                          <th className="text-left px-4 py-2 text-xs font-medium">
+                            Notes
+                          </th>
+                          <th className="text-right px-4 py-2 text-xs font-medium">
+                            Amount
+                          </th>
+                          <th className="text-center px-2 py-2 text-xs font-medium">
+                            Acts
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y">
                         {oneOffCosts.map((c) => {
-                          const total = c.applyMarkup ? c.amount * (1 + c.profitMarkup / 100) : c.amount
+                          const total = c.applyMarkup
+                            ? c.amount * (1 + c.profitMarkup / 100)
+                            : c.amount;
                           return (
                             <tr key={c.id} className="hover:bg-secondary/20">
-                              <td className="px-4 py-2 text-xs">{c.description}</td>
-                              <td className="px-4 py-2 text-xs text-muted-foreground">{c.notes || '—'}</td>
-                              <td className="px-4 py-2 text-right text-xs font-semibold">{formatCurrency(total)}</td>
+                              <td className="px-4 py-2 text-xs">
+                                {c.description}
+                              </td>
+                              <td className="px-4 py-2 text-xs text-muted-foreground">
+                                {c.notes || "—"}
+                              </td>
+                              <td className="px-4 py-2 text-right text-xs font-semibold">
+                                {formatCurrency(total)}
+                              </td>
                               <td className="px-2 py-2">
                                 <div className="flex items-center justify-center gap-0.5">
-                                  <button onClick={() => editOneOff(c)} className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-foreground">
+                                  <button
+                                    onClick={() => editOneOff(c)}
+                                    className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-foreground"
+                                  >
                                     <Settings2 className="w-3 h-3" />
                                   </button>
-                                  <button onClick={() => setDeleteConfirm({ type: 'oneoff', id: c.id })} className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-destructive">
+                                  <button
+                                    onClick={() =>
+                                      setDeleteConfirm({
+                                        type: "oneoff",
+                                        id: c.id,
+                                      })
+                                    }
+                                    className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-destructive"
+                                  >
                                     <Trash2 className="w-3 h-3" />
                                   </button>
                                 </div>
                               </td>
                             </tr>
-                          )
+                          );
                         })}
                         <tr className="bg-secondary/40 border-t font-semibold text-sm">
-                          <td colSpan={2} className="px-4 py-2 text-right">Total</td>
-                          <td className="px-4 py-2 text-right">{formatCurrency(oneOffTotal)}</td>
+                          <td colSpan={2} className="px-4 py-2 text-right">
+                            Total
+                          </td>
+                          <td className="px-4 py-2 text-right">
+                            {formatCurrency(oneOffTotal)}
+                          </td>
                           <td />
                         </tr>
                       </tbody>
@@ -1168,8 +1484,15 @@ export default function CalculatorPage() {
             <Card>
               <CardHeader className="pb-0">
                 <div className="flex items-center justify-between py-1">
-                  <CardTitle className="text-base">Contract Support Costs</CardTitle>
-                  <Button size="sm" variant="outline" className="h-7 text-xs" onClick={openAddSupport}>
+                  <CardTitle className="text-base">
+                    Contract Support Costs
+                  </CardTitle>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-7 text-xs"
+                    onClick={openAddSupport}
+                  >
                     <Plus className="w-3 h-3 mr-1" />
                     Add Role
                   </Button>
@@ -1177,44 +1500,80 @@ export default function CalculatorPage() {
               </CardHeader>
               <CardContent className="p-0 mt-2">
                 {supportCosts.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-sm text-muted-foreground">No support costs added.</div>
+                  <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+                    No support costs added.
+                  </div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-y bg-secondary/50">
-                          <th className="text-left px-4 py-2 text-xs font-medium">Position</th>
-                          <th className="text-right px-4 py-2 text-xs font-medium">Salary</th>
-                          <th className="text-right px-4 py-2 text-xs font-medium">Employment Cost</th>
-                          <th className="text-right px-4 py-2 text-xs font-medium">Total</th>
-                          <th className="text-center px-2 py-2 text-xs font-medium">Acts</th>
+                          <th className="text-left px-4 py-2 text-xs font-medium">
+                            Position
+                          </th>
+                          <th className="text-right px-4 py-2 text-xs font-medium">
+                            Salary
+                          </th>
+                          <th className="text-right px-4 py-2 text-xs font-medium">
+                            Employment Cost
+                          </th>
+                          <th className="text-right px-4 py-2 text-xs font-medium">
+                            Total
+                          </th>
+                          <th className="text-center px-2 py-2 text-xs font-medium">
+                            Acts
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y">
                         {supportCosts.map((s) => {
-                          const total = s.employmentCost * (1 + s.profitMarkup / 100)
+                          const total =
+                            s.employmentCost * (1 + s.profitMarkup / 100);
                           return (
                             <tr key={s.id} className="hover:bg-secondary/20">
-                              <td className="px-4 py-2 text-xs">{s.position}</td>
-                              <td className="px-4 py-2 text-right text-xs">{formatCurrency(s.estimatedSalary)}</td>
-                              <td className="px-4 py-2 text-right text-xs">{formatCurrency(s.employmentCost)}</td>
-                              <td className="px-4 py-2 text-right text-xs font-semibold">{formatCurrency(total)}</td>
+                              <td className="px-4 py-2 text-xs">
+                                {s.position}
+                              </td>
+                              <td className="px-4 py-2 text-right text-xs">
+                                {formatCurrency(s.estimatedSalary)}
+                              </td>
+                              <td className="px-4 py-2 text-right text-xs">
+                                {formatCurrency(s.employmentCost)}
+                              </td>
+                              <td className="px-4 py-2 text-right text-xs font-semibold">
+                                {formatCurrency(total)}
+                              </td>
                               <td className="px-2 py-2">
                                 <div className="flex items-center justify-center gap-0.5">
-                                  <button onClick={() => editSupport(s)} className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-foreground">
+                                  <button
+                                    onClick={() => editSupport(s)}
+                                    className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-foreground"
+                                  >
                                     <Settings2 className="w-3 h-3" />
                                   </button>
-                                  <button onClick={() => setDeleteConfirm({ type: 'support', id: s.id })} className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-destructive">
+                                  <button
+                                    onClick={() =>
+                                      setDeleteConfirm({
+                                        type: "support",
+                                        id: s.id,
+                                      })
+                                    }
+                                    className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-destructive"
+                                  >
                                     <Trash2 className="w-3 h-3" />
                                   </button>
                                 </div>
                               </td>
                             </tr>
-                          )
+                          );
                         })}
                         <tr className="bg-secondary/40 border-t font-semibold text-sm">
-                          <td colSpan={3} className="px-4 py-2 text-right">Total</td>
-                          <td className="px-4 py-2 text-right">{formatCurrency(supportTotal)}</td>
+                          <td colSpan={3} className="px-4 py-2 text-right">
+                            Total
+                          </td>
+                          <td className="px-4 py-2 text-right">
+                            {formatCurrency(supportTotal)}
+                          </td>
                           <td />
                         </tr>
                       </tbody>
@@ -1235,44 +1594,68 @@ export default function CalculatorPage() {
                 <div className="space-y-2 text-sm border-b pb-4">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">PPM (SFG20)</span>
-                    <span className="font-semibold">{formatCurrency(ppmSubtotal)}</span>
+                    <span className="font-semibold">
+                      {formatCurrency(ppmSubtotal)}
+                    </span>
                   </div>
                   {manualTaskSubtotal > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Non-SFG20 Tasks</span>
-                      <span className="font-semibold">{formatCurrency(manualTaskSubtotal)}</span>
+                      <span className="text-muted-foreground">
+                        Non-SFG20 Tasks
+                      </span>
+                      <span className="font-semibold">
+                        {formatCurrency(manualTaskSubtotal)}
+                      </span>
                     </div>
                   )}
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Mobilisation</span>
-                    <span className="font-semibold">{formatCurrency(mobilisationTotal)}</span>
+                    <span className="font-semibold">
+                      {formatCurrency(mobilisationTotal)}
+                    </span>
                   </div>
                   {oneOffTotal > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">One-Off Costs</span>
-                      <span className="font-semibold">{formatCurrency(oneOffTotal)}</span>
+                      <span className="text-muted-foreground">
+                        One-Off Costs
+                      </span>
+                      <span className="font-semibold">
+                        {formatCurrency(oneOffTotal)}
+                      </span>
                     </div>
                   )}
                   {supportTotal > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Support Costs</span>
-                      <span className="font-semibold">{formatCurrency(supportTotal)}</span>
+                      <span className="text-muted-foreground">
+                        Support Costs
+                      </span>
+                      <span className="font-semibold">
+                        {formatCurrency(supportTotal)}
+                      </span>
                     </div>
                   )}
                   <div className="flex justify-between pt-2 border-t">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span className="font-semibold">{formatCurrency(subtotalBeforeMargin)}</span>
+                    <span className="font-semibold">
+                      {formatCurrency(subtotalBeforeMargin)}
+                    </span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">+ {profitMarginPct}% Margin</span>
-                    <span className="font-semibold">{formatCurrency(marginAmount)}</span>
+                    <span className="text-muted-foreground">
+                      + {profitMarginPct}% Margin
+                    </span>
+                    <span className="font-semibold">
+                      {formatCurrency(marginAmount)}
+                    </span>
                   </div>
                 </div>
 
                 <div className="space-y-2 text-sm border-b pb-4">
                   <div className="flex justify-between">
                     <span className="font-medium">Year 1 (ex. VAT)</span>
-                    <span className="text-lg font-bold">{formatCurrency(totalYear1)}</span>
+                    <span className="text-lg font-bold">
+                      {formatCurrency(totalYear1)}
+                    </span>
                   </div>
                   <div className="flex justify-between text-xs text-muted-foreground">
                     <span>+ VAT ({vatRate}%)</span>
@@ -1295,24 +1678,47 @@ export default function CalculatorPage() {
                 <div className="space-y-3">
                   <div>
                     <Label className="text-xs">Profit Margin %</Label>
-                    <Input type="number" value={profitMarginPct} onChange={(e) => setProfitMarginPct(Number(e.target.value))} min="0" max="50" className="mt-1 h-8 text-xs" />
+                    <Input
+                      type="number"
+                      value={profitMarginPct}
+                      onChange={(e) =>
+                        setProfitMarginPct(Number(e.target.value))
+                      }
+                      min="0"
+                      max="50"
+                      className="mt-1 h-8 text-xs"
+                    />
                   </div>
                   <div>
                     <Label className="text-xs">Annual Adjustment %</Label>
-                    <Input type="number" value={annualAdjPct} onChange={(e) => setAnnualAdjPct(Number(e.target.value))} min="0" max="10" className="mt-1 h-8 text-xs" />
+                    <Input
+                      type="number"
+                      value={annualAdjPct}
+                      onChange={(e) => setAnnualAdjPct(Number(e.target.value))}
+                      min="0"
+                      max="10"
+                      className="mt-1 h-8 text-xs"
+                    />
                   </div>
                   <div className="flex justify-between text-xs p-2 bg-secondary/40 rounded-md">
                     <span className="text-muted-foreground">VAT Rate</span>
-                    <span className="font-medium">{vatRate}% (set in Settings)</span>
+                    <span className="font-medium">
+                      {vatRate}% (set in Settings)
+                    </span>
                   </div>
                   <div>
                     <Label className="text-xs">Notes</Label>
-                    <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Internal notes..." className="mt-1 text-xs min-h-20" />
+                    <Textarea
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="Internal notes..."
+                      className="mt-1 text-xs min-h-20"
+                    />
                   </div>
                 </div>
 
                 <Button onClick={saveAsDraft} className="w-full" size="sm">
-                  {editQuoteId ? 'Save Changes' : 'Save as Draft'}
+                  {editQuoteId ? "Save Changes" : "Save as Draft"}
                 </Button>
               </CardContent>
             </Card>
@@ -1326,33 +1732,50 @@ export default function CalculatorPage() {
           <DialogHeader>
             <DialogTitle>Add SFG20 Asset</DialogTitle>
             {pendingTask && (
-              <DialogDescription>{pendingTask.code} – {pendingTask.description}</DialogDescription>
+              <DialogDescription>
+                {pendingTask.code} – {pendingTask.description}
+              </DialogDescription>
             )}
           </DialogHeader>
           <div className="space-y-4 py-2">
             {/* Editable SFG20 hours per band */}
             {pendingTask && pendingAvailBands.length > 0 && (
               <div className="p-3 rounded-md bg-secondary/40 space-y-2">
-                <p className="font-semibold text-xs text-foreground">Hours per visit (edit if SFG20 hours need adjusting):</p>
+                <p className="font-semibold text-xs text-foreground">
+                  Hours per visit (edit if SFG20 hours need adjusting):
+                </p>
                 <div className="grid grid-cols-2 gap-2">
                   {pendingAvailBands.map((b) => (
                     <div key={b} className="flex items-center gap-2">
-                      <Label className="text-xs w-20 flex-shrink-0">{BAND_LABELS[b]}</Label>
+                      <Label className="text-xs w-20 flex-shrink-0">
+                        {BAND_LABELS[b]}
+                      </Label>
                       <Input
                         type="number"
                         step="0.25"
                         min="0"
                         className="h-7 text-xs w-20"
-                        value={draftLine.sfgHours?.[b] ?? pendingTask.sfgHours[b] ?? 0}
-                        onChange={(e) => setDraftLine({
-                          ...draftLine,
-                          sfgHours: {
-                            ...(draftLine.sfgHours ?? { ...emptyHours(), ...pendingTask.sfgHours }),
-                            [b]: Number(e.target.value),
-                          },
-                        })}
+                        value={
+                          draftLine.sfgHours?.[b] ??
+                          pendingTask.sfgHours[b] ??
+                          0
+                        }
+                        onChange={(e) =>
+                          setDraftLine({
+                            ...draftLine,
+                            sfgHours: {
+                              ...(draftLine.sfgHours ?? {
+                                ...emptyHours(),
+                                ...pendingTask.sfgHours,
+                              }),
+                              [b]: Number(e.target.value),
+                            },
+                          })
+                        }
                       />
-                      <span className="text-xs text-muted-foreground">h/visit</span>
+                      <span className="text-xs text-muted-foreground">
+                        h/visit
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -1369,7 +1792,9 @@ export default function CalculatorPage() {
                   </SelectTrigger>
                   <SelectContent>
                     {sites.map((s, i) => (
-                      <SelectItem key={s.id} value={s.id}>{s.name || `Site ${i + 1}`}</SelectItem>
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.name || `Site ${i + 1}`}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -1378,81 +1803,139 @@ export default function CalculatorPage() {
 
             <div>
               <Label className="text-xs">Location</Label>
-              <Input value={draftLine.location || ''} onChange={(e) => setDraftLine({ ...draftLine, location: e.target.value })} placeholder="e.g. Ground Floor" className="mt-1 h-8 text-xs" />
+              <Input
+                value={draftLine.location || ""}
+                onChange={(e) =>
+                  setDraftLine({ ...draftLine, location: e.target.value })
+                }
+                placeholder="e.g. Ground Floor"
+                className="mt-1 h-8 text-xs"
+              />
             </div>
             <div>
               <Label className="text-xs">Make/Model</Label>
-              <Input value={draftLine.makeModel || ''} onChange={(e) => setDraftLine({ ...draftLine, makeModel: e.target.value })} placeholder="e.g. Schneider" className="mt-1 h-8 text-xs" />
+              <Input
+                value={draftLine.makeModel || ""}
+                onChange={(e) =>
+                  setDraftLine({ ...draftLine, makeModel: e.target.value })
+                }
+                placeholder="e.g. Schneider"
+                className="mt-1 h-8 text-xs"
+              />
             </div>
             <div>
               <Label className="text-xs">Quantity</Label>
-              <Input type="number" value={draftLine.quantity || 1} onChange={(e) => setDraftLine({ ...draftLine, quantity: Number(e.target.value) })} min="1" className="mt-1 h-8 text-xs" />
+              <Input
+                type="number"
+                value={draftLine.quantity || 1}
+                onChange={(e) =>
+                  setDraftLine({
+                    ...draftLine,
+                    quantity: Number(e.target.value),
+                  })
+                }
+                min="1"
+                className="mt-1 h-8 text-xs"
+              />
             </div>
 
             {/* Criticality Selection */}
             <Separator />
             <div>
-              <Label className="text-xs font-semibold block mb-1">Criticality Level</Label>
+              <Label className="text-xs font-semibold block mb-1">
+                Criticality Level
+              </Label>
               <p className="text-xs text-muted-foreground mb-2">
-                Select a criticality level. The active frequency bands and their hours are determined automatically.
+                Select a criticality level. The active frequency bands and their
+                hours are determined automatically.
               </p>
               <div className="grid grid-cols-1 gap-2">
-                {(['critical', 'high', 'medium', 'low', 'custom'] as CriticalityLevel[]).map((level) => {
-                  const bands = level === 'custom' ? customBands : getCriticalityBands(pendingAvailBands, level)
-                  const isSelected = selectedCriticality === level
+                {(
+                  [
+                    "critical",
+                    "high",
+                    "medium",
+                    "low",
+                    "custom",
+                  ] as CriticalityLevel[]
+                ).map((level) => {
+                  const bands =
+                    level === "custom"
+                      ? customBands
+                      : getCriticalityBands(pendingAvailBands, level);
+                  const isSelected = selectedCriticality === level;
                   return (
                     <button
                       key={level}
                       onClick={() => setSelectedCriticality(level)}
                       className={cn(
-                        'rounded-lg border-2 p-2.5 text-left transition-all w-full',
+                        "rounded-lg border-2 p-2.5 text-left transition-all w-full",
                         isSelected
-                          ? cn('border-current', CRITICALITY_COLORS[level])
-                          : 'border-border hover:border-primary/30 bg-background'
+                          ? cn("border-current", CRITICALITY_COLORS[level])
+                          : "border-border hover:border-primary/30 bg-background",
                       )}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className={cn(
-                            'inline-block w-2.5 h-2.5 rounded-full flex-shrink-0',
-                            level === 'critical' && 'bg-red-500',
-                            level === 'high'     && 'bg-amber-500',
-                            level === 'medium'   && 'bg-pink-500',
-                            level === 'low'      && 'bg-green-500',
-                            level === 'custom'   && 'bg-secondary-foreground/40',
-                          )} />
-                          <p className="text-xs font-semibold">{CRITICALITY_LABELS[level]}</p>
+                          <span
+                            className={cn(
+                              "inline-block w-2.5 h-2.5 rounded-full flex-shrink-0",
+                              level === "critical" && "bg-red-500",
+                              level === "high" && "bg-amber-500",
+                              level === "medium" && "bg-pink-500",
+                              level === "low" && "bg-green-500",
+                              level === "custom" &&
+                                "bg-secondary-foreground/40",
+                            )}
+                          />
+                          <p className="text-xs font-semibold">
+                            {CRITICALITY_LABELS[level]}
+                          </p>
                         </div>
                         {bands.length > 0 && (
                           <div className="flex flex-wrap gap-1">
                             {bands.map((b) => (
-                              <span key={b} className="text-xs bg-background/80 border rounded px-1 text-muted-foreground">
+                              <span
+                                key={b}
+                                className="text-xs bg-background/80 border rounded px-1 text-muted-foreground"
+                              >
                                 {b}: {pendingTask?.sfgHours[b] ?? 0}h
                               </span>
                             ))}
                           </div>
                         )}
-                        {bands.length === 0 && <p className="text-xs text-muted-foreground">No bands</p>}
+                        {bands.length === 0 && (
+                          <p className="text-xs text-muted-foreground">
+                            No bands
+                          </p>
+                        )}
                       </div>
                     </button>
-                  )
+                  );
                 })}
               </div>
-              {selectedCriticality === 'custom' && (
+              {selectedCriticality === "custom" && (
                 <div className="mt-2 space-y-1">
                   <Label className="text-xs">Select active bands:</Label>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {pendingAvailBands.map((b) => (
-                      <label key={b} className="flex items-center gap-1.5 cursor-pointer">
+                      <label
+                        key={b}
+                        className="flex items-center gap-1.5 cursor-pointer"
+                      >
                         <Checkbox
                           checked={customBands.includes(b)}
                           onCheckedChange={(checked) => {
                             setCustomBands((prev) =>
-                              checked ? [...prev, b] : prev.filter((x) => x !== b)
-                            )
+                              checked
+                                ? [...prev, b]
+                                : prev.filter((x) => x !== b),
+                            );
                           }}
                         />
-                        <span className="text-xs">{BAND_LABELS[b]} ({pendingTask?.sfgHours[b]}h)</span>
+                        <span className="text-xs">
+                          {BAND_LABELS[b]} ({pendingTask?.sfgHours[b]}h)
+                        </span>
                       </label>
                     ))}
                   </div>
@@ -1460,26 +1943,39 @@ export default function CalculatorPage() {
               )}
               {previewBands.length > 0 && (
                 <div className="mt-2 p-2 bg-primary/5 border border-primary/20 rounded text-xs">
-                  <span className="text-muted-foreground font-medium">Cost preview: </span>
+                  <span className="text-muted-foreground font-medium">
+                    Cost preview:{" "}
+                  </span>
                   {previewBands.map((b) => {
-                    const hrsPerVisit = pendingTask?.sfgHours[b] ?? 0
-                    const visits = VISITS_PER_YEAR[b]
-                    const qty = Number(draftLine.quantity) || 1
-                    const annualHrs = hrsPerVisit * visits * qty
-                    const rate = getSalesRate(pendingTask?.discipline ?? 'electrical')
+                    const hrsPerVisit = pendingTask?.sfgHours[b] ?? 0;
+                    const visits = VISITS_PER_YEAR[b];
+                    const qty = Number(draftLine.quantity) || 1;
+                    const annualHrs = hrsPerVisit * visits * qty;
+                    const rate = getSalesRate(
+                      pendingTask?.discipline ?? "electrical",
+                    );
                     return (
                       <span key={b} className="mr-2">
-                        {BAND_LABELS[b]}: {annualHrs.toFixed(1)}h ({formatCurrency(annualHrs * rate)}/yr)
+                        {BAND_LABELS[b]}: {annualHrs.toFixed(1)}h (
+                        {formatCurrency(annualHrs * rate)}/yr)
                       </span>
-                    )
+                    );
                   })}
                 </div>
               )}
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setAddDialogOpen(false)} size="sm">Cancel</Button>
-            <Button onClick={confirmAdd} size="sm">Add to Register</Button>
+            <Button
+              variant="outline"
+              onClick={() => setAddDialogOpen(false)}
+              size="sm"
+            >
+              Cancel
+            </Button>
+            <Button onClick={confirmAdd} size="sm">
+              Add to Register
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1489,19 +1985,28 @@ export default function CalculatorPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Non-SFG20 Task</DialogTitle>
-            <DialogDescription>Add a manually-defined task with custom timing and hours.</DialogDescription>
+            <DialogDescription>
+              Add a manually-defined task with custom timing and hours.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             {sites.length > 1 && (
               <div>
                 <Label className="text-xs">Site</Label>
-                <Select value={draftManual.siteId || sites[0]?.id} onValueChange={(v) => setDraftManual({ ...draftManual, siteId: v })}>
-                  <SelectTrigger className="mt-1 h-8 text-xs">
+                <Select
+                  value={draftManual.siteId || sites[0]?.id}
+                  onValueChange={(v) =>
+                    setDraftManual({ ...draftManual, siteId: v })
+                  }
+                >
+                  <SelectTrigger className="mt-1 h-8 text-xs w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {sites.map((s, i) => (
-                      <SelectItem key={s.id} value={s.id}>{s.name || `Site ${i + 1}`}</SelectItem>
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.name || `Site ${i + 1}`}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -1509,53 +2014,137 @@ export default function CalculatorPage() {
             )}
             <div>
               <Label className="text-xs">Description</Label>
-              <Input value={draftManual.description || ''} onChange={(e) => setDraftManual({ ...draftManual, description: e.target.value })} placeholder="e.g. Annual window cleaning" className="mt-1 h-8 text-xs" />
+              <Input
+                value={draftManual.description || ""}
+                onChange={(e) =>
+                  setDraftManual({
+                    ...draftManual,
+                    description: e.target.value,
+                  })
+                }
+                placeholder="e.g. Annual window cleaning"
+                className="mt-1 h-8 text-xs"
+              />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-xs">Discipline</Label>
-                <Select value={draftManual.discipline || 'fabric'} onValueChange={(v) => setDraftManual({ ...draftManual, discipline: v as Discipline })}>
-                  <SelectTrigger className="mt-1 h-8 text-xs">
+                <Select
+                  value={draftManual.discipline || "fabric"}
+                  onValueChange={(v) =>
+                    setDraftManual({
+                      ...draftManual,
+                      discipline: v as Discipline,
+                    })
+                  }
+                >
+                  <SelectTrigger className="mt-1 h-8 text-xs w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {DISCIPLINES.map((d) => (
-                      <SelectItem key={d} value={d}>{DISCIPLINE_LABELS[d]}</SelectItem>
+                      <SelectItem key={d} value={d}>
+                        {DISCIPLINE_LABELS[d]}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label className="text-xs">Location</Label>
-                <Input value={draftManual.location || ''} onChange={(e) => setDraftManual({ ...draftManual, location: e.target.value })} placeholder="e.g. External" className="mt-1 h-8 text-xs" />
+                <Input
+                  value={draftManual.location || ""}
+                  onChange={(e) =>
+                    setDraftManual({ ...draftManual, location: e.target.value })
+                  }
+                  placeholder="e.g. External"
+                  className="mt-1 h-8 text-xs"
+                />
               </div>
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div>
                 <Label className="text-xs">Quantity</Label>
-                <Input type="number" value={draftManual.quantity || 1} onChange={(e) => setDraftManual({ ...draftManual, quantity: Number(e.target.value) })} min="1" className="mt-1 h-8 text-xs" />
+                <Input
+                  type="number"
+                  value={draftManual.quantity || 1}
+                  onChange={(e) =>
+                    setDraftManual({
+                      ...draftManual,
+                      quantity: Number(e.target.value),
+                    })
+                  }
+                  min="1"
+                  className="mt-1 h-8 text-xs"
+                />
               </div>
               <div>
                 <Label className="text-xs">Hrs / Visit</Label>
-                <Input type="number" step="0.5" value={draftManual.hoursPerVisit || 2} onChange={(e) => setDraftManual({ ...draftManual, hoursPerVisit: Number(e.target.value) })} min="0.5" className="mt-1 h-8 text-xs" />
+                <Input
+                  type="number"
+                  step="0.5"
+                  value={draftManual.hoursPerVisit || 2}
+                  onChange={(e) =>
+                    setDraftManual({
+                      ...draftManual,
+                      hoursPerVisit: Number(e.target.value),
+                    })
+                  }
+                  min="0.5"
+                  className="mt-1 h-8 text-xs"
+                />
               </div>
               <div>
                 <Label className="text-xs">Visits / Year</Label>
-                <Input type="number" value={draftManual.visitsPerYear || 4} onChange={(e) => setDraftManual({ ...draftManual, visitsPerYear: Number(e.target.value) })} min="1" className="mt-1 h-8 text-xs" />
+                <Input
+                  type="number"
+                  value={draftManual.visitsPerYear || 4}
+                  onChange={(e) =>
+                    setDraftManual({
+                      ...draftManual,
+                      visitsPerYear: Number(e.target.value),
+                    })
+                  }
+                  min="1"
+                  className="mt-1 h-8 text-xs"
+                />
               </div>
             </div>
             <div className="p-2 bg-secondary/40 rounded text-xs text-muted-foreground">
-              Annual hours: <span className="font-semibold text-foreground">
-                {((draftManual.hoursPerVisit ?? 2) * (draftManual.visitsPerYear ?? 4) * (draftManual.quantity ?? 1)).toFixed(1)}h
-              </span> at {formatCurrency(getSalesRate(draftManual.discipline ?? 'fabric'))}/hr =
+              Annual hours:{" "}
+              <span className="font-semibold text-foreground">
+                {(
+                  (draftManual.hoursPerVisit ?? 2) *
+                  (draftManual.visitsPerYear ?? 4) *
+                  (draftManual.quantity ?? 1)
+                ).toFixed(1)}
+                h
+              </span>{" "}
+              at{" "}
+              {formatCurrency(getSalesRate(draftManual.discipline ?? "fabric"))}
+              /hr =
               <span className="font-semibold text-foreground ml-1">
-                {formatCurrency((draftManual.hoursPerVisit ?? 2) * (draftManual.visitsPerYear ?? 4) * (draftManual.quantity ?? 1) * getSalesRate(draftManual.discipline ?? 'fabric'))}/yr
+                {formatCurrency(
+                  (draftManual.hoursPerVisit ?? 2) *
+                    (draftManual.visitsPerYear ?? 4) *
+                    (draftManual.quantity ?? 1) *
+                    getSalesRate(draftManual.discipline ?? "fabric"),
+                )}
+                /yr
               </span>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setManualDialogOpen(false)} size="sm">Cancel</Button>
-            <Button onClick={saveManual} size="sm">Save</Button>
+            <Button
+              variant="outline"
+              onClick={() => setManualDialogOpen(false)}
+              size="sm"
+            >
+              Cancel
+            </Button>
+            <Button onClick={saveManual} size="sm">
+              Save
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1565,35 +2154,88 @@ export default function CalculatorPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Mobilisation Cost</DialogTitle>
-            <DialogDescription>Add a mobilisation or setup cost item to this quote.</DialogDescription>
+            <DialogDescription>
+              Add a mobilisation or setup cost item to this quote.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
               <Label className="text-xs">Description</Label>
-              <Input value={draftMob.description || ''} onChange={(e) => setDraftMob({ ...draftMob, description: e.target.value })} placeholder="e.g. Asset Loading Days" className="mt-1 h-8 text-xs" />
+              <Input
+                value={draftMob.description || ""}
+                onChange={(e) =>
+                  setDraftMob({ ...draftMob, description: e.target.value })
+                }
+                placeholder="e.g. Asset Loading Days"
+                className="mt-1 h-8 text-xs"
+              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="text-xs">Quantity</Label>
-                <Input type="number" value={draftMob.quantity || 0} onChange={(e) => setDraftMob({ ...draftMob, quantity: Number(e.target.value) })} min="1" className="mt-1 h-8 text-xs" />
+                <Input
+                  type="number"
+                  value={draftMob.quantity || 0}
+                  onChange={(e) =>
+                    setDraftMob({
+                      ...draftMob,
+                      quantity: Number(e.target.value),
+                    })
+                  }
+                  min="1"
+                  className="mt-1 h-8 text-xs"
+                />
               </div>
               <div>
                 <Label className="text-xs">Unit</Label>
-                <Input value={draftMob.unit || 'Days'} onChange={(e) => setDraftMob({ ...draftMob, unit: e.target.value })} className="mt-1 h-8 text-xs" />
+                <Input
+                  value={draftMob.unit || "Days"}
+                  onChange={(e) =>
+                    setDraftMob({ ...draftMob, unit: e.target.value })
+                  }
+                  className="mt-1 h-8 text-xs"
+                />
               </div>
             </div>
             <div>
               <Label className="text-xs">Price per Unit</Label>
-              <Input type="number" value={draftMob.pricePerUnit || 0} onChange={(e) => setDraftMob({ ...draftMob, pricePerUnit: Number(e.target.value) })} min="0" className="mt-1 h-8 text-xs" />
+              <Input
+                type="number"
+                value={draftMob.pricePerUnit || 0}
+                onChange={(e) =>
+                  setDraftMob({
+                    ...draftMob,
+                    pricePerUnit: Number(e.target.value),
+                  })
+                }
+                min="0"
+                className="mt-1 h-8 text-xs"
+              />
             </div>
             <div className="flex items-center gap-2">
-              <Checkbox id="markup" checked={draftMob.applyMarkup ?? true} onCheckedChange={(c) => setDraftMob({ ...draftMob, applyMarkup: !!c })} />
-              <Label htmlFor="markup" className="text-xs">Apply Profit Markup ({settings.defaultMobilisationMarkup}%)</Label>
+              <Checkbox
+                id="markup"
+                checked={draftMob.applyMarkup ?? true}
+                onCheckedChange={(c) =>
+                  setDraftMob({ ...draftMob, applyMarkup: !!c })
+                }
+              />
+              <Label htmlFor="markup" className="text-xs">
+                Apply Profit Markup ({settings.defaultMobilisationMarkup}%)
+              </Label>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setMobDialogOpen(false)} size="sm">Cancel</Button>
-            <Button onClick={saveMobilisation} size="sm">Save</Button>
+            <Button
+              variant="outline"
+              onClick={() => setMobDialogOpen(false)}
+              size="sm"
+            >
+              Cancel
+            </Button>
+            <Button onClick={saveMobilisation} size="sm">
+              Save
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1603,29 +2245,77 @@ export default function CalculatorPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>One-Off Cost</DialogTitle>
-            <DialogDescription>Add a one-off cost such as a licence fee, Simpro subscription, or SFG20 access.</DialogDescription>
+            <DialogDescription>
+              Add a one-off cost such as a licence fee, Simpro subscription, or
+              SFG20 access.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
               <Label className="text-xs">Description</Label>
-              <Input value={draftOneOff.description || ''} onChange={(e) => setDraftOneOff({ ...draftOneOff, description: e.target.value })} placeholder="e.g. Simpro Licence" className="mt-1 h-8 text-xs" />
+              <Input
+                value={draftOneOff.description || ""}
+                onChange={(e) =>
+                  setDraftOneOff({
+                    ...draftOneOff,
+                    description: e.target.value,
+                  })
+                }
+                placeholder="e.g. Simpro Licence"
+                className="mt-1 h-8 text-xs"
+              />
             </div>
             <div>
               <Label className="text-xs">Amount (£)</Label>
-              <Input type="number" value={draftOneOff.amount || 0} onChange={(e) => setDraftOneOff({ ...draftOneOff, amount: Number(e.target.value) })} min="0" step="0.01" className="mt-1 h-8 text-xs" />
+              <Input
+                type="number"
+                value={draftOneOff.amount || 0}
+                onChange={(e) =>
+                  setDraftOneOff({
+                    ...draftOneOff,
+                    amount: Number(e.target.value),
+                  })
+                }
+                min="0"
+                step="0.01"
+                className="mt-1 h-8 text-xs"
+              />
             </div>
             <div>
               <Label className="text-xs">Notes (optional)</Label>
-              <Input value={draftOneOff.notes || ''} onChange={(e) => setDraftOneOff({ ...draftOneOff, notes: e.target.value })} placeholder="e.g. Annual subscription" className="mt-1 h-8 text-xs" />
+              <Input
+                value={draftOneOff.notes || ""}
+                onChange={(e) =>
+                  setDraftOneOff({ ...draftOneOff, notes: e.target.value })
+                }
+                placeholder="e.g. Annual subscription"
+                className="mt-1 h-8 text-xs"
+              />
             </div>
             <div className="flex items-center gap-2">
-              <Checkbox id="oc-markup" checked={draftOneOff.applyMarkup ?? false} onCheckedChange={(c) => setDraftOneOff({ ...draftOneOff, applyMarkup: !!c })} />
-              <Label htmlFor="oc-markup" className="text-xs">Apply Markup</Label>
+              <Checkbox
+                id="oc-markup"
+                checked={draftOneOff.applyMarkup ?? false}
+                onCheckedChange={(c) =>
+                  setDraftOneOff({ ...draftOneOff, applyMarkup: !!c })
+                }
+              />
+              <Label htmlFor="oc-markup" className="text-xs">
+                Apply Markup
+              </Label>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOneOffDialogOpen(false)} size="sm">Cancel</Button>
-            <Button onClick={saveOneOff} size="sm">Save</Button>
+            <Button
+              variant="outline"
+              onClick={() => setOneOffDialogOpen(false)}
+              size="sm"
+            >
+              Cancel
+            </Button>
+            <Button onClick={saveOneOff} size="sm">
+              Save
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1635,69 +2325,119 @@ export default function CalculatorPage() {
         <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Contract Support Role</DialogTitle>
-            <DialogDescription>Add a support role to this contract. Choose from your saved roles or enter a new one.</DialogDescription>
+            <DialogDescription>
+              Add a support role to this contract. Choose from your saved roles
+              or enter a new one.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             {/* Mode toggle */}
             <div className="flex rounded-lg border overflow-hidden">
               <button
-                className={cn('flex-1 text-xs py-2 font-medium transition-colors', supportMode === 'pick' ? 'bg-primary text-primary-foreground' : 'bg-background text-muted-foreground hover:bg-secondary')}
-                onClick={() => setSupportMode('pick')}
+                className={cn(
+                  "flex-1 text-xs py-2 font-medium transition-colors",
+                  supportMode === "pick"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-background text-muted-foreground hover:bg-secondary",
+                )}
+                onClick={() => setSupportMode("pick")}
               >
                 Pick existing role
               </button>
               <button
-                className={cn('flex-1 text-xs py-2 font-medium transition-colors', supportMode === 'new' ? 'bg-primary text-primary-foreground' : 'bg-background text-muted-foreground hover:bg-secondary')}
-                onClick={() => setSupportMode('new')}
+                className={cn(
+                  "flex-1 text-xs py-2 font-medium transition-colors",
+                  supportMode === "new"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-background text-muted-foreground hover:bg-secondary",
+                )}
+                onClick={() => setSupportMode("new")}
               >
                 Enter new role
               </button>
             </div>
 
-            {supportMode === 'pick' ? (
+            {supportMode === "pick" ? (
               <div className="space-y-3">
                 <div>
                   <Label className="text-xs">Select Role</Label>
-                  <Select value={selectedRoleId} onValueChange={setSelectedRoleId}>
-                    <SelectTrigger className="mt-1 h-8 text-xs">
+                  <Select
+                    value={selectedRoleId}
+                    onValueChange={setSelectedRoleId}
+                  >
+                    <SelectTrigger className="mt-1 h-8 text-xs w-full">
                       <SelectValue placeholder="Select a role..." />
                     </SelectTrigger>
                     <SelectContent>
                       {roleRates.map((r) => (
                         <SelectItem key={r.id} value={r.id}>
                           <span className="font-medium">{r.position}</span>
-                          <span className="text-muted-foreground ml-2">£{r.dayRate}/day</span>
+                          <span className="text-muted-foreground ml-2">
+                            £{r.dayRate}/day
+                          </span>
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  {selectedRoleId && (() => {
-                    const role = roleRates.find((r) => r.id === selectedRoleId)
-                    if (!role) return null
-                    return (
-                      <div className="mt-2 p-2 rounded bg-secondary/40 text-xs space-y-1">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Day rate charged to client:</span>
-                          <span className="font-semibold">£{role.dayRate}/day</span>
+                  {selectedRoleId &&
+                    (() => {
+                      const role = roleRates.find(
+                        (r) => r.id === selectedRoleId,
+                      );
+                      if (!role) return null;
+                      return (
+                        <div className="mt-2 p-2 rounded bg-secondary/40 text-xs space-y-1">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">
+                              Day rate charged to client:
+                            </span>
+                            <span className="font-semibold">
+                              £{role.dayRate}/day
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">
+                              Internal base cost:
+                            </span>
+                            <span>£{role.baseRate}/day</span>
+                          </div>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Internal base cost:</span>
-                          <span>£{role.baseRate}/day</span>
-                        </div>
-                      </div>
-                    )
-                  })()}
+                      );
+                    })()}
                 </div>
               </div>
             ) : (
               <div className="space-y-3">
                 <div>
                   <Label className="text-xs">Role / Position</Label>
-                  <Input value={draftSupport.position || ''} onChange={(e) => setDraftSupport({ ...draftSupport, position: e.target.value })} placeholder="e.g. Contract Manager" className="mt-1 h-8 text-xs" />
+                  <Input
+                    value={draftSupport.position || ""}
+                    onChange={(e) =>
+                      setDraftSupport({
+                        ...draftSupport,
+                        position: e.target.value,
+                      })
+                    }
+                    placeholder="e.g. Contract Manager"
+                    className="mt-1 h-8 text-xs"
+                  />
                 </div>
                 <div>
-                  <Label className="text-xs">Day Rate (£ charged to client)</Label>
-                  <Input type="number" value={draftSupport.estimatedSalary || 0} onChange={(e) => setDraftSupport({ ...draftSupport, estimatedSalary: Number(e.target.value) })} min="0" className="mt-1 h-8 text-xs" />
+                  <Label className="text-xs">
+                    Day Rate (£ charged to client)
+                  </Label>
+                  <Input
+                    type="number"
+                    value={draftSupport.estimatedSalary || 0}
+                    onChange={(e) =>
+                      setDraftSupport({
+                        ...draftSupport,
+                        estimatedSalary: Number(e.target.value),
+                      })
+                    }
+                    min="0"
+                    className="mt-1 h-8 text-xs"
+                  />
                 </div>
               </div>
             )}
@@ -1705,7 +2445,9 @@ export default function CalculatorPage() {
             <Separator />
 
             <div>
-              <Label className="text-xs font-semibold">Hours per week on this contract</Label>
+              <Label className="text-xs font-semibold">
+                Hours per week on this contract
+              </Label>
               <p className="text-xs text-muted-foreground mt-0.5 mb-1.5">
                 How many hours per week will this person spend on this contract?
               </p>
@@ -1713,7 +2455,9 @@ export default function CalculatorPage() {
                 <Input
                   type="number"
                   value={supportHoursPerWeek}
-                  onChange={(e) => setSupportHoursPerWeek(Math.max(1, Number(e.target.value)))}
+                  onChange={(e) =>
+                    setSupportHoursPerWeek(Math.max(1, Number(e.target.value)))
+                  }
                   min="1"
                   max="40"
                   className="h-8 text-xs w-24"
@@ -1721,62 +2465,110 @@ export default function CalculatorPage() {
                 <span className="text-xs text-muted-foreground">hrs/week</span>
               </div>
               {(() => {
-                const role = supportMode === 'pick' ? roleRates.find((r) => r.id === selectedRoleId) : null
-                const dayRate = supportMode === 'pick' ? (role?.dayRate ?? 0) : (draftSupport.estimatedSalary ?? 0)
-                const daysPA = Math.round((supportHoursPerWeek / 8) * 52)
-                const annualCost = dayRate * daysPA
+                const role =
+                  supportMode === "pick"
+                    ? roleRates.find((r) => r.id === selectedRoleId)
+                    : null;
+                const dayRate =
+                  supportMode === "pick"
+                    ? (role?.dayRate ?? 0)
+                    : (draftSupport.estimatedSalary ?? 0);
+                const daysPA = Math.round((supportHoursPerWeek / 8) * 52);
+                const annualCost = dayRate * daysPA;
                 return (
                   <div className="mt-2 p-2 rounded bg-primary/5 border border-primary/20 text-xs space-y-1">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Days per year:</span>
+                      <span className="text-muted-foreground">
+                        Days per year:
+                      </span>
                       <span className="font-medium">{daysPA} days/yr</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Estimated annual cost:</span>
-                      <span className="font-semibold text-primary">£{annualCost.toLocaleString('en-GB', { minimumFractionDigits: 0 })}</span>
+                      <span className="text-muted-foreground">
+                        Estimated annual cost:
+                      </span>
+                      <span className="font-semibold text-primary">
+                        £
+                        {annualCost.toLocaleString("en-GB", {
+                          minimumFractionDigits: 0,
+                        })}
+                      </span>
                     </div>
                   </div>
-                )
+                );
               })()}
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setSupportDialogOpen(false)} size="sm">Cancel</Button>
-            <Button onClick={saveSupport} size="sm">Add Role</Button>
+            <Button
+              variant="outline"
+              onClick={() => setSupportDialogOpen(false)}
+              size="sm"
+            >
+              Cancel
+            </Button>
+            <Button onClick={saveSupport} size="sm">
+              Add Role
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Delete Confirmation */}
-      <AlertDialog open={!!deleteConfirm} onOpenChange={(open) => !open && setDeleteConfirm(null)}>
+      <AlertDialog
+        open={!!deleteConfirm}
+        onOpenChange={(open) => !open && setDeleteConfirm(null)}
+      >
         <AlertDialogContent>
           <AlertDialogTitle>Delete Item?</AlertDialogTitle>
-          <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+          <AlertDialogDescription>
+            This cannot be undone.
+          </AlertDialogDescription>
           <div className="flex items-start gap-2 bg-amber-50 dark:bg-amber-950 p-3 rounded-md">
             <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-amber-800 dark:text-amber-200">Save your work before deleting.</p>
+            <p className="text-xs text-amber-800 dark:text-amber-200">
+              Save your work before deleting.
+            </p>
           </div>
           <div className="flex gap-2 justify-end pt-2">
             <AlertDialogCancel asChild>
-              <Button variant="outline" size="sm">Cancel</Button>
+              <Button variant="outline" size="sm">
+                Cancel
+              </Button>
             </AlertDialogCancel>
             <AlertDialogAction asChild>
               <Button
-                variant="destructive" size="sm"
+                variant="destructive"
+                size="sm"
                 onClick={() => {
-                  if (!deleteConfirm) return
-                  if (deleteConfirm.type === 'asset') removeAsset(deleteConfirm.id)
-                  else if (deleteConfirm.type === 'manual') setManualTasks((p) => p.filter((t) => t.id !== deleteConfirm.id))
-                  else if (deleteConfirm.type === 'mob') setMobilisationCosts((p) => p.filter((m) => m.id !== deleteConfirm.id))
-                  else if (deleteConfirm.type === 'oneoff') setOneOffCosts((p) => p.filter((c) => c.id !== deleteConfirm.id))
-                  else if (deleteConfirm.type === 'support') setSupportCosts((p) => p.filter((s) => s.id !== deleteConfirm.id))
-                  setDeleteConfirm(null)
+                  if (!deleteConfirm) return;
+                  if (deleteConfirm.type === "asset")
+                    removeAsset(deleteConfirm.id);
+                  else if (deleteConfirm.type === "manual")
+                    setManualTasks((p) =>
+                      p.filter((t) => t.id !== deleteConfirm.id),
+                    );
+                  else if (deleteConfirm.type === "mob")
+                    setMobilisationCosts((p) =>
+                      p.filter((m) => m.id !== deleteConfirm.id),
+                    );
+                  else if (deleteConfirm.type === "oneoff")
+                    setOneOffCosts((p) =>
+                      p.filter((c) => c.id !== deleteConfirm.id),
+                    );
+                  else if (deleteConfirm.type === "support")
+                    setSupportCosts((p) =>
+                      p.filter((s) => s.id !== deleteConfirm.id),
+                    );
+                  setDeleteConfirm(null);
                 }}
-              >Delete</Button>
+              >
+                Delete
+              </Button>
             </AlertDialogAction>
           </div>
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  )
+  );
 }

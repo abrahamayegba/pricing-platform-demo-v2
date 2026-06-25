@@ -89,7 +89,7 @@ export default function QuotesPage() {
   return (
     <div className="flex flex-col h-full">
       {/* ── Page header ── */}
-      <div className="px-6 pt-6 pb-4 border-b bg-background">
+      <div className="px-12 pt-6 pb-4 border-b bg-background">
         <div className="flex items-center justify-between gap-4 max-w-screen-xl mx-auto">
           <div>
             <h1 className="text-lg font-semibold">Quotes &amp; Tenders</h1>
@@ -107,68 +107,101 @@ export default function QuotesPage() {
       </div>
 
       <div className="flex-1 overflow-auto">
-        <div className="px-6 py-5 max-w-screen-xl mx-auto space-y-5">
-
+        <div className="px-12 py-7 max-w-screen-xl mx-auto flex flex-col gap-y-7">
           {/* ── Summary cards ── */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <div className={SUMMARY_CARD_CLASSES}>
-              <p className="text-xs text-muted-foreground font-medium">Pipeline (ex. VAT)</p>
-              <p className="text-xl font-bold tabular-nums">{formatCurrency(totalExVat)}</p>
-              <p className="text-xs text-muted-foreground">{formatCurrency(totalIncVat)} inc. VAT</p>
+              <p className="text-xs text-muted-foreground font-medium">
+                Pipeline (ex. VAT)
+              </p>
+              <p className="text-xl font-bold tabular-nums">
+                {formatCurrency(totalExVat)}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {formatCurrency(totalIncVat)} inc. VAT
+              </p>
             </div>
             <div className={SUMMARY_CARD_CLASSES}>
-              <p className="text-xs text-muted-foreground font-medium">Won Value</p>
-              <p className="text-xl font-bold tabular-nums text-emerald-600">{formatCurrency(acceptedVal)}</p>
-              <p className="text-xs text-muted-foreground">{filtered.filter((q) => q.status === 'accepted').length} accepted</p>
+              <p className="text-xs text-muted-foreground font-medium">
+                Won Value
+              </p>
+              <p className="text-xl font-bold tabular-nums text-emerald-600">
+                {formatCurrency(acceptedVal)}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {filtered.filter((q) => q.status === "accepted").length}{" "}
+                accepted
+              </p>
             </div>
             <div className={SUMMARY_CARD_CLASSES}>
-              <p className="text-xs text-muted-foreground font-medium">Awaiting Decision</p>
-              <p className="text-xl font-bold tabular-nums text-blue-600">{pendingCount}</p>
+              <p className="text-xs text-muted-foreground font-medium">
+                Awaiting Decision
+              </p>
+              <p className="text-xl font-bold tabular-nums text-blue-600">
+                {pendingCount}
+              </p>
               <p className="text-xs text-muted-foreground">sent to clients</p>
             </div>
             <div className={SUMMARY_CARD_CLASSES}>
-              <p className="text-xs text-muted-foreground font-medium">Win Rate</p>
+              <p className="text-xs text-muted-foreground font-medium">
+                Win Rate
+              </p>
               <p className="text-xl font-bold tabular-nums">
-                {quotes.filter((q) => q.status !== 'draft').length > 0
-                  ? `${Math.round((quotes.filter((q) => q.status === 'accepted').length / quotes.filter((q) => q.status !== 'draft').length) * 100)}%`
-                  : '—'}
+                {quotes.filter((q) => q.status !== "draft").length > 0
+                  ? `${Math.round((quotes.filter((q) => q.status === "accepted").length / quotes.filter((q) => q.status !== "draft").length) * 100)}%`
+                  : "—"}
               </p>
               <p className="text-xs text-muted-foreground">of submitted</p>
             </div>
           </div>
 
           {/* ── Filters ── */}
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative flex-1 min-w-44 max-w-xs">
+          <div className="grid grid-cols-5 gap-3">
+            <div className="relative w-full col-span-2 h-full">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
               <Input
                 placeholder="Search client, site, reference..."
-                className="pl-8 h-8 text-sm"
+                className="pl-8 w-full text-sm"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as QuoteStatus | 'all')}>
-              <SelectTrigger className="w-36 h-8 text-xs"><SelectValue /></SelectTrigger>
+            <Select
+              value={statusFilter}
+              onValueChange={(v) => setStatusFilter(v as QuoteStatus | "all")}
+            >
+              <SelectTrigger className=" grid-cols-1 w-full h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 {STATUS_FILTERS.map((f) => (
-                  <SelectItem key={f.value} value={f.value} className="text-xs">{f.label}</SelectItem>
+                  <SelectItem key={f.value} value={f.value} className="text-xs">
+                    {f.label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-36 h-8 text-xs"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="grid-cols-1 w-full h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 {TYPE_FILTERS.map((f) => (
-                  <SelectItem key={f.value} value={f.value} className="text-xs">{f.label}</SelectItem>
+                  <SelectItem key={f.value} value={f.value} className="text-xs">
+                    {f.label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <Select value={entityFilter} onValueChange={setEntityFilter}>
-              <SelectTrigger className="w-32 h-8 text-xs"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="grid-cols-1 w-full h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 {ENTITY_FILTERS.map((f) => (
-                  <SelectItem key={f.value} value={f.value} className="text-xs">{f.label}</SelectItem>
+                  <SelectItem key={f.value} value={f.value} className="text-xs">
+                    {f.label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -194,29 +227,37 @@ export default function QuotesPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium">
-                    {quotes.length === 0 ? 'No quotes yet' : 'No quotes match your filters'}
+                    {quotes.length === 0
+                      ? "No quotes yet"
+                      : "No quotes match your filters"}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {quotes.length === 0
-                      ? 'Create your first quote to get started.'
-                      : 'Try adjusting the search or filters above.'}
+                      ? "Create your first quote to get started."
+                      : "Try adjusting the search or filters above."}
                   </p>
                 </div>
                 {quotes.length === 0 && (
                   <Button asChild size="sm" variant="outline">
-                    <Link href="/calculator"><Plus className="w-3.5 h-3.5 mr-1.5" />New Quote</Link>
+                    <Link href="/calculator">
+                      <Plus className="w-3.5 h-3.5 mr-1.5" />
+                      New Quote
+                    </Link>
                   </Button>
                 )}
               </div>
             ) : (
               <div className="divide-y">
                 {filtered.map((q) => {
-                  const sc = statusConfig(q.status)
-                  const tc = quoteTypeConfig(q.quoteType ?? 'tender')
-                  const ec = businessEntityConfig(q.businessEntity ?? 'virtual_facilities_services')
-                  const siteCount = (q.sites ?? []).length || 1
-                  const primarySite = q.sites?.[0]?.name || q.siteName || null
-                  const year2 = q.totalYear1 * (1 + (q.annualAdjustmentPct ?? 2) / 100)
+                  const sc = statusConfig(q.status);
+                  const tc = quoteTypeConfig(q.quoteType ?? "tender");
+                  const ec = businessEntityConfig(
+                    q.businessEntity ?? "virtual_facilities_services",
+                  );
+                  const siteCount = (q.sites ?? []).length || 1;
+                  const primarySite = q.sites?.[0]?.name || q.siteName || null;
+                  const year2 =
+                    q.totalYear1 * (1 + (q.annualAdjustmentPct ?? 2) / 100);
 
                   return (
                     <Link
@@ -226,7 +267,9 @@ export default function QuotesPage() {
                     >
                       {/* Client / site */}
                       <div className="min-w-0 pr-3">
-                        <p className="text-sm font-medium truncate leading-tight">{q.clientName}</p>
+                        <p className="text-sm font-medium truncate leading-tight">
+                          {q.clientName}
+                        </p>
                         <div className="flex items-center gap-1 mt-0.5">
                           {primarySite && (
                             <span className="flex items-center gap-0.5 text-xs text-muted-foreground truncate max-w-[220px]">
@@ -235,31 +278,55 @@ export default function QuotesPage() {
                             </span>
                           )}
                           {siteCount > 1 && (
-                            <Badge variant="secondary" className="text-[10px] px-1 py-0 h-4 leading-none">
+                            <Badge
+                              variant="secondary"
+                              className="text-[10px] px-1 py-0 h-4 leading-none"
+                            >
                               +{siteCount - 1}
                             </Badge>
                           )}
-                          <span className="text-xs text-muted-foreground/60 ml-1 flex-shrink-0">{q.reference}</span>
+                          <span className="text-xs text-muted-foreground/60 ml-1 flex-shrink-0">
+                            {q.reference}
+                          </span>
                         </div>
                       </div>
 
                       {/* Entity & type */}
                       <div className="flex flex-col gap-1 items-start">
-                        <Badge variant="outline" className={cn('text-[10px] px-1.5 py-0 h-4 leading-none font-medium', ec.badge)}>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            "text-[10px] px-1.5 py-0 h-4 leading-none font-medium",
+                            ec.badge,
+                          )}
+                        >
                           {ec.short}
                         </Badge>
-                        <Badge variant="outline" className={cn('text-[10px] px-1.5 py-0 h-4 leading-none', tc.badge)}>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            "text-[10px] px-1.5 py-0 h-4 leading-none",
+                            tc.badge,
+                          )}
+                        >
                           {tc.label}
                         </Badge>
                       </div>
 
                       {/* Status */}
                       <div className="flex justify-center">
-                        <span className={cn(
-                          'inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full border',
-                          sc.badge
-                        )}>
-                          <span className={cn('w-1.5 h-1.5 rounded-full flex-shrink-0', sc.dot)} />
+                        <span
+                          className={cn(
+                            "inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full border",
+                            sc.badge,
+                          )}
+                        >
+                          <span
+                            className={cn(
+                              "w-1.5 h-1.5 rounded-full flex-shrink-0",
+                              sc.dot,
+                            )}
+                          />
                           {sc.label}
                         </span>
                       </div>
@@ -272,9 +339,14 @@ export default function QuotesPage() {
 
                       {/* Pricing */}
                       <div className="text-right pr-1">
-                        <p className="text-sm font-semibold tabular-nums">{formatCurrency(q.totalYear1)}</p>
+                        <p className="text-sm font-semibold tabular-nums">
+                          {formatCurrency(q.totalYear1)}
+                        </p>
                         <p className="text-[10px] text-muted-foreground tabular-nums leading-tight">
-                          {formatCurrency(q.totalYear1IncVat ?? q.totalYear1 * 1.2)} inc. VAT
+                          {formatCurrency(
+                            q.totalYear1IncVat ?? q.totalYear1 * 1.2,
+                          )}{" "}
+                          inc. VAT
                         </p>
                         {q.annualAdjustmentPct && (
                           <p className="text-[10px] text-muted-foreground/70 tabular-nums flex items-center justify-end gap-0.5 mt-0.5">
@@ -286,14 +358,21 @@ export default function QuotesPage() {
 
                       {/* Created */}
                       <div className="pl-2">
-                        <p className="text-xs text-muted-foreground">{formatDate(q.createdAt)}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatDate(q.createdAt)}
+                        </p>
                         {q.notes && (
-                          <p className="text-[10px] text-muted-foreground/60 mt-0.5 truncate max-w-[110px]">{q.notes}</p>
+                          <p className="text-[10px] text-muted-foreground/60 mt-0.5 truncate max-w-[110px]">
+                            {q.notes}
+                          </p>
                         )}
                       </div>
 
                       {/* Actions — stop propagation so click doesn't navigate */}
-                      <div className="flex justify-end" onClick={(e) => e.preventDefault()}>
+                      <div
+                        className="flex justify-end"
+                        onClick={(e) => e.preventDefault()}
+                      >
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
@@ -309,23 +388,33 @@ export default function QuotesPage() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem asChild>
                               <Link href={`/quotes/${q.id}`}>
-                                <Eye className="w-4 h-4 mr-2" />View / Edit
+                                <Eye className="w-4 h-4 mr-2" />
+                                View / Edit
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            {q.status === 'draft' && (
-                              <DropdownMenuItem onClick={() => updateStatus(q, 'sent')}>
-                                <Send className="w-4 h-4 mr-2" />Mark as Sent
+                            {q.status === "draft" && (
+                              <DropdownMenuItem
+                                onClick={() => updateStatus(q, "sent")}
+                              >
+                                <Send className="w-4 h-4 mr-2" />
+                                Mark as Sent
                               </DropdownMenuItem>
                             )}
-                            {(q.status === 'sent' || q.status === 'draft') && (
-                              <DropdownMenuItem onClick={() => updateStatus(q, 'accepted')}>
-                                <CheckCircle className="w-4 h-4 mr-2 text-emerald-600" />Mark as Accepted
+                            {(q.status === "sent" || q.status === "draft") && (
+                              <DropdownMenuItem
+                                onClick={() => updateStatus(q, "accepted")}
+                              >
+                                <CheckCircle className="w-4 h-4 mr-2 text-emerald-600" />
+                                Mark as Accepted
                               </DropdownMenuItem>
                             )}
-                            {q.status === 'sent' && (
-                              <DropdownMenuItem onClick={() => updateStatus(q, 'declined')}>
-                                <XCircle className="w-4 h-4 mr-2 text-red-500" />Mark as Declined
+                            {q.status === "sent" && (
+                              <DropdownMenuItem
+                                onClick={() => updateStatus(q, "declined")}
+                              >
+                                <XCircle className="w-4 h-4 mr-2 text-red-500" />
+                                Mark as Declined
                               </DropdownMenuItem>
                             )}
                             <DropdownMenuSeparator />
@@ -333,13 +422,14 @@ export default function QuotesPage() {
                               onClick={() => handleDelete(q.id)}
                               className="text-destructive focus:text-destructive"
                             >
-                              <Trash2 className="w-4 h-4 mr-2" />Delete
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
                     </Link>
-                  )
+                  );
                 })}
               </div>
             )}
@@ -347,13 +437,19 @@ export default function QuotesPage() {
             {/* Footer */}
             {filtered.length > 0 && (
               <div className="grid grid-cols-[minmax(0,2fr)_100px_80px_80px_130px_130px_40px] items-center bg-muted/30 border-t px-4 py-2.5 text-xs text-muted-foreground">
-                <span className="font-medium">{filtered.length} document{filtered.length !== 1 ? 's' : ''}</span>
+                <span className="font-medium">
+                  {filtered.length} document{filtered.length !== 1 ? "s" : ""}
+                </span>
                 <span />
                 <span />
                 <span />
                 <div className="text-right pr-1">
-                  <p className="font-semibold text-foreground tabular-nums">{formatCurrency(totalExVat)}</p>
-                  <p className="text-[10px] tabular-nums">{formatCurrency(totalIncVat)} inc. VAT</p>
+                  <p className="font-semibold text-foreground tabular-nums">
+                    {formatCurrency(totalExVat)}
+                  </p>
+                  <p className="text-[10px] tabular-nums">
+                    {formatCurrency(totalIncVat)} inc. VAT
+                  </p>
                 </div>
                 <span />
                 <span />
@@ -363,5 +459,5 @@ export default function QuotesPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -261,7 +261,7 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
               </div>
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Business Entity</p>
-                <p className="text-sm font-semibold">{BUSINESS_ENTITY_LABELS[quote.businessEntity ?? 'virtual_facilities_services']}</p>
+                <p className="text-lg font-semibold">{BUSINESS_ENTITY_LABELS[quote.businessEntity ?? 'virtual_facilities_services']}</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Region</p>
@@ -324,7 +324,7 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
                 <CardTitle className="text-base">Pricing Summary</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className="space-y-4 -mt-2">
                   <div className="bg-secondary/30 rounded-lg p-4 space-y-2">
                     <h3 className="font-semibold text-sm mb-2">Cost Components (Before Margin):</h3>
                     <div className="flex justify-between text-sm py-1 border-b">
@@ -417,7 +417,7 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
               <Card>
                 <CardHeader><CardTitle className="text-base">By Discipline</CardTitle></CardHeader>
                 <CardContent>
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto -mt-3">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-b">
@@ -467,7 +467,7 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
                   const siteCost = lines.reduce((s, c) => s + c.annualCost, 0) + manuals.reduce((s, c) => s + c.annualCost, 0)
                   return (
                     <Card key={site.id}>
-                      <CardHeader className="pb-2">
+                      <CardHeader>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <MapPin className="w-4 h-4 text-muted-foreground" />
@@ -477,8 +477,8 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
                           <span className="text-sm font-bold">{formatCurrency(siteCost)}</span>
                         </div>
                       </CardHeader>
-                      <CardContent className="space-y-3">
-                        {lines.map(({ line, annualCost }) => (
+                      <CardContent className="space-y-3 -mt-2">
+                        {lines.map(({ line }) => (
                           <CostBreakdown
                             key={line.id}
                             assetLine={line}
@@ -571,7 +571,7 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
                 {quote.mobilisationCosts.length === 0 ? (
                   <p className="text-sm text-muted-foreground py-6 text-center">No mobilisation costs.</p>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-3 -mt-2">
                     {quote.mobilisationCosts.map((m) => {
                       const base = m.quantity * m.pricePerUnit
                       const total = m.applyMarkup ? base * (1 + m.profitMarkup / 100) : base
@@ -787,7 +787,7 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
             <div className="space-y-4 print:space-y-6" id="client-document">
               {/* Header */}
               <Card>
-                <CardContent className="pt-6">
+                <CardContent>
                   <div className="flex flex-col sm:flex-row sm:justify-between gap-4 mb-6 pb-6 border-b">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
@@ -822,7 +822,7 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
               <Card>
                 <CardHeader><CardTitle className="text-base">Sites Covered</CardTitle></CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
+                  <div className="space-y-2 -mt-2">
                     {sites.map((site, idx) => (
                       <div key={site.id} className="flex items-center gap-2 p-2 border rounded-lg">
                         <MapPin className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
@@ -840,7 +840,7 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
               <Card>
                 <CardHeader><CardTitle className="text-base">Scope of Works</CardTitle></CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <div className="space-y-4 -mt-2">
                     {siteGroups.map(({ site, lines, manuals }) => {
                       if (lines.length === 0 && manuals.length === 0) return null
                       return (

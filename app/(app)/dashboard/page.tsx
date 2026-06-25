@@ -16,7 +16,7 @@ function StatCard({ label, value, sub, icon: Icon, accent }: {
 }) {
   return (
     <Card>
-      <CardContent className="pt-5 pb-5">
+      <CardContent>
         <div className="flex items-start justify-between">
           <div>
             <p className="text-sm text-muted-foreground">{label}</p>
@@ -55,7 +55,7 @@ export default function DashboardPage() {
   const recent = [...quotes].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 5)
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className=" py-6 max-w-6xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -91,9 +91,9 @@ export default function DashboardPage() {
             </Link>
           </Button>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className=" -mt-3">
           {recent.length === 0 ? (
-            <p className="text-sm text-muted-foreground px-6 pb-5">No quotes yet. Create your first quote to get started.</p>
+            <p className="text-sm text-muted-foreground px-2 pb-5">No quotes yet. Create your first quote to get started.</p>
           ) : (
             <div className="divide-y">
               {recent.map((q) => {
@@ -102,7 +102,7 @@ export default function DashboardPage() {
                   <Link
                     key={q.id}
                     href={`/quotes/${q.id}`}
-                    className="flex items-center gap-4 px-6 py-3.5 hover:bg-secondary/50 transition-colors group"
+                    className="flex items-center gap-4 px-2 py-3.5 hover:bg-secondary/50 transition-colors group"
                   >
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium truncate">{q.clientName}</p>

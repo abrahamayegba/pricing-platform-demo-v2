@@ -45,7 +45,7 @@ export default function TasksPage() {
   }
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="py-6 max-w-6xl mx-auto">
       <div className="flex items-start justify-between mb-5">
         <div>
           <h1 className="text-xl font-semibold">SFG20 Task Library</h1>
@@ -147,8 +147,8 @@ export default function TasksPage() {
                 key={task.id}
                 className="grid grid-cols-[90px_1fr_160px_repeat(7,52px)] items-center px-4 py-3 hover:bg-secondary/30 transition-colors text-sm"
               >
-                <span className="font-mono text-xs text-muted-foreground">{task.code}</span>
-                <div className="min-w-0 pr-4">
+                <span className="font-mono text-xs text-muted-foreground min-w-[100px] pr-3">{task.code}</span>
+                <div className="min-w-0 pr-4 pl-2">
                   <p className="font-medium truncate">{task.description}</p>
                   {task.notes && <p className="text-xs text-muted-foreground truncate">{task.notes}</p>}
                 </div>

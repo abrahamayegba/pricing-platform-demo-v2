@@ -15,9 +15,10 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
 import {
-  ArrowLeft, AlertCircle, MapPin, Building2, Loader2,
+  ArrowLeft, AlertCircle, MapPin, Building2, Loader2, Pencil,
   Sparkles, TrendingUp, TrendingDown, Minus, AlertTriangle, CheckCircle2, Lightbulb, Eye, Share2, ExternalLink,
 } from 'lucide-react'
+import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils-app'
 import { cn } from '@/lib/utils'
 import { CostBreakdown } from '@/components/cost-breakdown'
@@ -184,7 +185,7 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
   }
 
   const statusConfig = STATUS_CONFIG[quote.status]
-  const ec = businessEntityConfig(quote.businessEntity ?? 'virtual_facilities_management')
+  const ec = businessEntityConfig(quote.businessEntity ?? 'virtual_facilities_services')
   const tc = quoteTypeConfig(quote.quoteType ?? 'tender')
   const rateCard = getRateCard(quote.regionId)
 
@@ -237,6 +238,12 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
               <AlertCircle className="w-4 h-4 mr-1.5" />
               {statusConfig.label}
             </Button>
+            <Button size="sm" asChild>
+              <Link href={`/calculator?edit=${quote.id}`}>
+                <Pencil className="w-4 h-4 mr-1.5" />
+                Edit Quote
+              </Link>
+            </Button>
           </div>
         </div>
 
@@ -254,7 +261,7 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
               </div>
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Business Entity</p>
-                <p className="text-sm font-semibold">{BUSINESS_ENTITY_LABELS[quote.businessEntity ?? 'virtual_facilities_management']}</p>
+                <p className="text-sm font-semibold">{BUSINESS_ENTITY_LABELS[quote.businessEntity ?? 'virtual_facilities_services']}</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Region</p>
@@ -787,7 +794,7 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
                         <Building2 className="w-4 h-4 text-muted-foreground" />
                         <p className="text-xs text-muted-foreground uppercase tracking-wide">Issued by</p>
                       </div>
-                      <p className="font-bold text-base">{BUSINESS_ENTITY_LABELS[quote.businessEntity ?? 'virtual_facilities_management']}</p>
+                      <p className="font-bold text-base">{BUSINESS_ENTITY_LABELS[quote.businessEntity ?? 'virtual_facilities_services']}</p>
                     </div>
                     <div className="text-sm text-right">
                       <p className="text-xs text-muted-foreground mb-1">{QUOTE_TYPE_LABELS[quote.quoteType ?? 'tender']}</p>

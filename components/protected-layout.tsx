@@ -13,7 +13,7 @@ export function ProtectedLayout({ children }: { children: React.ReactNode }) {
     if (user === null) {
       // Only redirect after the auth state has been initialised (avoids flash on load)
       const t = setTimeout(() => {
-        if (!sessionStorage.getItem('sfg20_user')) router.replace('/')
+        if (!sessionStorage.getItem('vfs_user')) router.replace('/')
       }, 50)
       return () => clearTimeout(t)
     }

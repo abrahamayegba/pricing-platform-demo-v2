@@ -66,7 +66,7 @@ export default function ClientViewPage({ params }: { params: Promise<{ id: strin
   }
 
   const rateCard = getRateCard(quote.regionId)
-  const ec = businessEntityConfig(quote.businessEntity ?? 'virtual_facilities_management')
+  const ec = businessEntityConfig(quote.businessEntity ?? 'virtual_facilities_services')
   const vatRate = quote.vatRate ?? 20
   const vatAmount = quote.vatAmount ?? (quote.totalYear1 * vatRate / 100)
   const totalYear1IncVat = quote.totalYear1IncVat ?? (quote.totalYear1 + vatAmount)
@@ -127,7 +127,7 @@ export default function ClientViewPage({ params }: { params: Promise<{ id: strin
                   <Building2 className="w-4 h-4 text-muted-foreground" />
                   <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Issued by</p>
                 </div>
-                <p className="text-xl font-bold">{BUSINESS_ENTITY_LABELS[quote.businessEntity ?? 'virtual_facilities_management']}</p>
+                <p className="text-xl font-bold">{BUSINESS_ENTITY_LABELS[quote.businessEntity ?? 'virtual_facilities_services']}</p>
                 <Badge variant="outline" className={cn('mt-1.5 text-xs', ec.badge)}>{ec.short}</Badge>
               </div>
               <div className="sm:text-right">
@@ -303,7 +303,7 @@ export default function ClientViewPage({ params }: { params: Promise<{ id: strin
 
         {/* Footer */}
         <div className="text-center text-xs text-muted-foreground pt-4 pb-8 border-t space-y-1">
-          <p>{BUSINESS_ENTITY_LABELS[quote.businessEntity ?? 'virtual_facilities_management']} — {quote.reference} — {issueDate}</p>
+          <p>{BUSINESS_ENTITY_LABELS[quote.businessEntity ?? 'virtual_facilities_services']} — {quote.reference} — {issueDate}</p>
           <p>This document is confidential and prepared exclusively for {quote.clientName}.</p>
         </div>
       </div>

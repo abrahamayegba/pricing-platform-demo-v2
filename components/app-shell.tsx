@@ -3,8 +3,9 @@
 import { useAuth } from '@/lib/auth-context'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
-  Building2, LayoutDashboard, BookOpen, MapPin,
+  LayoutDashboard, BookOpen, MapPin,
   Calculator, FileText, ChevronRight, LogOut, Settings,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -16,7 +17,7 @@ import { CalculationModelSheet } from '@/components/calculation-model-sheet'
 
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/tasks', label: 'SFG20 Tasks', icon: BookOpen },
+  { href: '/tasks', label: 'SFG20 Library', icon: BookOpen },
   { href: '/rates', label: 'Regional Rates', icon: MapPin },
   { href: '/calculator', label: 'New Quote', icon: Calculator },
   { href: '/quotes', label: 'Quotes', icon: FileText },
@@ -35,14 +36,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       <aside className="w-60 flex-shrink-0 bg-sidebar text-sidebar-foreground flex flex-col border-r border-sidebar-border">
-        <div className="flex items-center gap-2.5 px-5 py-5 border-b border-sidebar-border">
-          <div className="w-8 h-8 rounded-md bg-sidebar-primary flex items-center justify-center flex-shrink-0">
-            <Building2 className="w-4 h-4 text-sidebar-primary-foreground" />
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-sidebar-foreground leading-tight">SFG20 Pricing</p>
-            <p className="text-xs text-sidebar-foreground/50 truncate">FM Platform</p>
-          </div>
+        <div className="flex items-center justify-center px-4 py-4 border-b border-sidebar-border">
+          <Image
+            src="/virtual-fs-logo-dark.jpg"
+            alt="Virtual FS"
+            width={120}
+            height={90}
+            className="object-contain"
+          />
         </div>
 
         <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5" aria-label="Main navigation">

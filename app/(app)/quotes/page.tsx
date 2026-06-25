@@ -39,10 +39,9 @@ const TYPE_FILTERS = [
 ]
 
 const ENTITY_FILTERS = [
-  { value: 'all',                               label: 'All Entities' },
-  { value: 'virtual_facilities_management',     label: 'VFM' },
-  { value: 'virtual_water_services',            label: 'VWS' },
-  { value: 'virtual_facilities_services',       label: 'VFS' },
+  { value: 'all',                           label: 'All Entities' },
+  { value: 'virtual_facilities_services',   label: 'VFS' },
+  { value: 'virtual_water_services',        label: 'VWS' },
 ]
 
 const SUMMARY_CARD_CLASSES = 'rounded-xl border bg-card p-4 flex flex-col gap-1'
@@ -214,7 +213,7 @@ export default function QuotesPage() {
                 {filtered.map((q) => {
                   const sc = statusConfig(q.status)
                   const tc = quoteTypeConfig(q.quoteType ?? 'tender')
-                  const ec = businessEntityConfig(q.businessEntity ?? 'virtual_facilities_management')
+                  const ec = businessEntityConfig(q.businessEntity ?? 'virtual_facilities_services')
                   const siteCount = (q.sites ?? []).length || 1
                   const primarySite = q.sites?.[0]?.name || q.siteName || null
                   const year2 = q.totalYear1 * (1 + (q.annualAdjustmentPct ?? 2) / 100)

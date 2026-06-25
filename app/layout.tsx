@@ -7,8 +7,8 @@ const geistSans = Geist({ subsets: ['latin'] })
 const geistMono = Geist_Mono({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'SFG20 Pricing Platform',
-  description: 'Facilities management live pricing and quote builder based on SFG20 maintenance schedules',
+  title: 'Virtual Facility Services — Pricing Platform',
+  description: 'Virtual Facility Services live pricing and quote builder for planned maintenance contracts',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

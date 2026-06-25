@@ -177,7 +177,7 @@ function migrateQuote(q: any): Quote {
   return {
     ...q,
     quoteType: q.quoteType ?? 'tender',
-    businessEntity: q.businessEntity ?? 'virtual_facilities_management',
+    businessEntity: q.businessEntity === 'virtual_facilities_management' ? 'virtual_facilities_services' : (q.businessEntity ?? 'virtual_facilities_services'),
     sites: q.sites && q.sites.length > 0 ? q.sites : [defaultSite],
     manualTasks: q.manualTasks ?? [],
     oneOffCosts: q.oneOffCosts ?? [],
@@ -310,7 +310,7 @@ function seed(): Quote[] {
     // ── Q1: SFH Opco / Casa by Moda – North Lodge Wynd, Glasgow (Scotland) ──
     buildQuote({
       id: 'demo-q1', reference: 'QT-2025-001',
-      quoteType: 'tender', businessEntity: 'virtual_facilities_management',
+      quoteType: 'tender', businessEntity: 'virtual_facilities_services',
       clientName: 'SFH Opco Limited (Casa by Moda)',
       sites: [
         { id: 's1a', name: '1 North Lodge Wynd', address: '1 North Lodge Wynd, Glasgow, G33 4BG' },
@@ -350,16 +350,16 @@ function seed(): Quote[] {
       ],
       mobilisationCosts: [
         { id: 'm1', description: 'Asset Survey & Loading (6 sites)', quantity: 6, unit: 'Days', pricePerUnit: 175, applyMarkup: true, profitMarkup: 13.64 },
-        { id: 'm2', description: 'SimPRO Licence Setup', quantity: 1, unit: 'Item', pricePerUnit: 330, applyMarkup: true, profitMarkup: 13.64 },
+        { id: 'm2', description: 'Simpro Licence Setup', quantity: 1, unit: 'Item', pricePerUnit: 330, applyMarkup: true, profitMarkup: 13.64 },
       ],
       supportCosts: [],
       oneOffCosts: [
         { id: 'oc1', description: 'SFG20 Licence', amount: 2500, applyMarkup: false, profitMarkup: 0, notes: 'Annual SFG20 task library access' },
-        { id: 'oc2', description: 'SimPRO CAFM Licence', amount: 1200, applyMarkup: false, profitMarkup: 0 },
+        { id: 'oc2', description: 'Simpro CAFM Licence', amount: 1200, applyMarkup: false, profitMarkup: 0 },
       ],
       profitMarginPct: 17, annualAdjustmentPct: 2, vatRate: 20,
       notes: 'Build-to-rent portfolio. All 6 properties require same specification PPM scope. Access must be coordinated with tenants — 48h notice required.',
-      createdBy: 'K. Morrison', daysAgo: 12, updatedDaysAgo: 5,
+      createdBy: 'Abraham Ayegba', daysAgo: 12, updatedDaysAgo: 5,
     }),
 
     // ── Q2: Royal Conservatoire of Scotland – 100 Renfrew Street, Glasgow ──
@@ -401,11 +401,11 @@ function seed(): Quote[] {
       ],
       oneOffCosts: [
         { id: 'oc3', description: 'SFG20 Licence', amount: 2500, applyMarkup: false, profitMarkup: 0, notes: 'Annual SFG20 task library access' },
-        { id: 'oc4', description: 'SimPRO CAFM Licence', amount: 1200, applyMarkup: false, profitMarkup: 0 },
+        { id: 'oc4', description: 'Simpro CAFM Licence', amount: 1200, applyMarkup: false, profitMarkup: 0 },
       ],
       profitMarginPct: 17, annualAdjustmentPct: 2.5, vatRate: 20,
       notes: 'Heritage building (Grade A listed equivalent). All works must comply with Historic Environment Scotland guidance. Theatrical environments — dust and vibration sensitive.',
-      createdBy: 'S. Chen', daysAgo: 30, updatedDaysAgo: 8,
+      createdBy: 'Grant Currie', daysAgo: 30, updatedDaysAgo: 8,
     }),
 
     // ── Q3: Virtual FM Ltd – 300 Bath Street / 39-41 George Street Edinburgh ──
@@ -450,13 +450,13 @@ function seed(): Quote[] {
       supportCosts: [],
       profitMarginPct: 17, annualAdjustmentPct: 2, vatRate: 20,
       notes: 'Multi-site office portfolio managed by VFM internal FM team. Biomass boiler at 300 Bath St requires specialist certified engineer.',
-      createdBy: 'K. Morrison', daysAgo: 3, updatedDaysAgo: 1,
+      createdBy: 'Abraham Ayegba', daysAgo: 3, updatedDaysAgo: 1,
     }),
 
     // ── Q4: Enable Scotland – Multiple Sites, Glasgow ──
     buildQuote({
       id: 'demo-q4', reference: 'QT-2025-004',
-      quoteType: 'tender', businessEntity: 'virtual_facilities_management',
+      quoteType: 'tender', businessEntity: 'virtual_facilities_services',
       clientName: 'Enable Scotland (Leading The Way) Ltd',
       sites: [
         { id: 's4a', name: '1 Allnach Place, Easterhouse', address: '1 Allnach Place, Easterhouse, Glasgow, G34 0DW' },
@@ -489,7 +489,7 @@ function seed(): Quote[] {
       ],
       profitMarginPct: 15, annualAdjustmentPct: 2, vatRate: 20,
       notes: 'Supported living & community care facilities. All engineers require PVG scheme membership. Sensitive occupants — access coordination critical. DBS enhanced required.',
-      createdBy: 'J. Okafor', daysAgo: 20, updatedDaysAgo: 14,
+      createdBy: 'Abraham Ayegba', daysAgo: 20, updatedDaysAgo: 14,
     }),
 
     // ── Q5: Casa by Moda – Leeds Portfolio (Tannery Row / Bookmakers Place) ──
@@ -539,13 +539,13 @@ function seed(): Quote[] {
       supportCosts: [],
       profitMarginPct: 17, annualAdjustmentPct: 2, vatRate: 20,
       notes: 'Build-to-rent portfolio – Yorkshire region. Access via managing agent. Consistent specification across all units.',
-      createdBy: 'K. Morrison', daysAgo: 45, updatedDaysAgo: 35,
+      createdBy: 'Abraham Ayegba', daysAgo: 45, updatedDaysAgo: 35,
     }),
 
     // ── Q6: Genus Communications – 216 West George Street, Glasgow ──
     buildQuote({
       id: 'demo-q6', reference: 'QT-2026-001',
-      quoteType: 'tender', businessEntity: 'virtual_facilities_management',
+      quoteType: 'tender', businessEntity: 'virtual_facilities_services',
       clientName: 'Genus Communications',
       sites: [
         { id: 's6a', name: '216 West George Street', address: '216 West George Street, Glasgow, G2 2PQ' },
@@ -567,24 +567,24 @@ function seed(): Quote[] {
       ],
       mobilisationCosts: [
         { id: 'fm1', description: 'Asset Survey & Loading', quantity: 3, unit: 'Days', pricePerUnit: 175, applyMarkup: true, profitMarkup: 13.64 },
-        { id: 'fm2', description: 'SimPRO Licence Setup', quantity: 1, unit: 'Item', pricePerUnit: 1200, applyMarkup: true, profitMarkup: 13.64 },
+        { id: 'fm2', description: 'Simpro Licence Setup', quantity: 1, unit: 'Item', pricePerUnit: 1200, applyMarkup: true, profitMarkup: 13.64 },
       ],
       supportCosts: [
         { id: 'fs1', position: 'Contract Manager (0.5 FTE)', daysRequiredPA: 120, fte: 0.5, estimatedSalary: 48000, car: 4500, fuelEstimate: 2000, niRate: 15, pensionRate: 3, employmentCost: 48000 * 0.5 * 1.18 + 4500 * 0.5 + 2000 * 0.5, shareOfTotal: 0, profitMarkup: 13.64, costFactoredIn: 0 },
       ],
       oneOffCosts: [
         { id: 'oc6', description: 'SFG20 Licence', amount: 2500, applyMarkup: false, profitMarkup: 0 },
-        { id: 'oc7', description: 'SimPRO CAFM Licence', amount: 1200, applyMarkup: false, profitMarkup: 0 },
+        { id: 'oc7', description: 'Simpro CAFM Licence', amount: 1200, applyMarkup: false, profitMarkup: 0 },
       ],
       profitMarginPct: 18, annualAdjustmentPct: 3, vatRate: 20,
       notes: 'Commercial office over 5 floors. Sensitive communications infrastructure — all works require prior written approval from IT manager. Server room access restricted to vetted engineers only.',
-      createdBy: 'K. Morrison', daysAgo: 2, updatedDaysAgo: 0,
+      createdBy: 'Abraham Ayegba', daysAgo: 2, updatedDaysAgo: 0,
     }),
 
     // ── Q7: Casa by Moda – Armthorpe, Doncaster + Hardy Crescent ──
     buildQuote({
       id: 'demo-q7', reference: 'QT-2026-002',
-      quoteType: 'tender', businessEntity: 'virtual_facilities_management',
+      quoteType: 'tender', businessEntity: 'virtual_facilities_services',
       clientName: 'SFH Opco Limited (Casa by Moda)',
       sites: [
         { id: 's7a', name: '16 Mason Drive, Armthorpe', address: '16 Mason Drive, Armthorpe, Doncaster, DN3 3RB' },
@@ -622,7 +622,7 @@ function seed(): Quote[] {
       supportCosts: [],
       profitMarginPct: 17, annualAdjustmentPct: 2.5, vatRate: 20,
       notes: 'North East & Yorkshire BTR portfolio. Coordinated access via Casa by Moda tenancy team — minimum 24h notice.',
-      createdBy: 'S. Chen', daysAgo: 60, updatedDaysAgo: 15,
+      createdBy: 'Grant Currie', daysAgo: 60, updatedDaysAgo: 15,
     }),
   ]
 }

@@ -12,26 +12,22 @@ export type Discipline =
 // ── Business Entities ────────────────────────────────────────────────────────
 
 export type BusinessEntity =
-  | 'virtual_facilities_management'
-  | 'virtual_water_services'
   | 'virtual_facilities_services'
+  | 'virtual_water_services'
 
 export const BUSINESS_ENTITY_LABELS: Record<BusinessEntity, string> = {
-  virtual_facilities_management: 'Virtual Facilities Management',
+  virtual_facilities_services:   'Virtual Facility Services',
   virtual_water_services:        'Virtual Water Services',
-  virtual_facilities_services:   'Virtual Facilities Services',
 }
 
 export const BUSINESS_ENTITY_SHORT: Record<BusinessEntity, string> = {
-  virtual_facilities_management: 'VFM',
-  virtual_water_services:        'VWS',
   virtual_facilities_services:   'VFS',
+  virtual_water_services:        'VWS',
 }
 
 export const BUSINESS_ENTITIES: BusinessEntity[] = [
-  'virtual_facilities_management',
-  'virtual_water_services',
   'virtual_facilities_services',
+  'virtual_water_services',
 ]
 
 // ── Quote Type ───────────────────────────────────────────────────────────────
@@ -277,7 +273,7 @@ export const DEFAULT_APP_SETTINGS: AppSettings = {
   defaultProfitMarginPct: 17,
   defaultAnnualAdjustmentPct: 2,
   defaultMobilisationMarkup: 13.64,
-  companyName: 'Virtual FM Group',
+  companyName: 'Virtual Facility Services',
 }
 
 // ── Quote ────────────────────────────────────────────────────────────────────

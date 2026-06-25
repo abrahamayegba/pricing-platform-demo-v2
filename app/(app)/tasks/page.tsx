@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Search, RefreshCw, Check } from 'lucide-react'
-import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
 const BAND_ORDER: FrequencyBand[] = ['1W', '1M', '2M', '3M', '4M', '6M', '12M']
@@ -59,7 +58,6 @@ export default function TasksPage() {
             </p>
           )}
         </div>
-        <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="sm"
@@ -79,10 +77,6 @@ export default function TasksPage() {
               </>
             )}
           </Button>
-          <Button asChild>
-            <Link href="/calculator">Use in Quote</Link>
-          </Button>
-        </div>
       </div>
 
       {refreshing && (
@@ -184,7 +178,7 @@ export default function TasksPage() {
       </div>
 
       <p className="text-xs text-muted-foreground mt-3">
-        Hours shown are SFG20 standard hours per visit for each frequency band. Actual annual cost is calculated in the quote builder using regional labour rates and efficiency factors.
+        Hours shown are SFG20 standard hours per visit for each frequency band. Hours can be adjusted when adding a task to a quote. Annual cost is calculated using regional labour rates.
       </p>
     </div>
   )

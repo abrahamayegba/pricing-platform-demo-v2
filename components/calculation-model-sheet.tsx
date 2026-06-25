@@ -385,7 +385,7 @@ function SectionContent({ id }: { id: SectionId }) {
             { term: 'Sales Rate',      def: 'The hourly rate charged to clients for a discipline in a region (£/hr). Set in the Regional Rates page.' },
             { term: 'Base Rate',       def: 'The internal cost rate (what you pay engineers). Not shown to clients.' },
             { term: 'Mobilisation',    def: 'One-time setup costs: asset surveys, CAFM loading, DBS checks, inductions, software licences.' },
-            { term: 'CAFM',            def: 'Computer-Aided Facilities Management — software used to schedule and track PPM jobs (e.g. SimPRO, Concept Evolution).' },
+            { term: 'CAFM',            def: 'Computer-Aided Facilities Management — software used to schedule and track PPM jobs (e.g. Simpro, Concept Evolution).' },
             { term: 'Profit Margin',   def: 'Gross margin on sales price (not markup on cost). Applied to the sum of all cost layers.' },
             { term: 'Annual Uplift',   def: 'Year-on-year price increase to account for inflation (CPI / RPI). Applied as a compound rate.' },
             { term: 'FTE',             def: 'Full-Time Equivalent. 1.0 FTE = 40 hours/week. 0.25 FTE = 10 hours/week allocated to this contract.' },

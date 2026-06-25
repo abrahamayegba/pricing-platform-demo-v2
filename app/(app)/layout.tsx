@@ -16,7 +16,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!hydrated) return
-    if (!user && !sessionStorage.getItem('sfg20_user')) {
+    if (!user && !sessionStorage.getItem('vfs_user')) {
       router.replace('/')
     }
   }, [hydrated, user, router])

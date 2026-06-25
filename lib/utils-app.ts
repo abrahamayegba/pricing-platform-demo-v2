@@ -33,11 +33,10 @@ export function quoteTypeConfig(type: QuoteType) {
 
 export function businessEntityConfig(entity: BusinessEntity) {
   const map: Record<BusinessEntity, { label: string; short: string; badge: string }> = {
-    virtual_facilities_management: { label: 'Virtual Facilities Management', short: 'VFM', badge: 'bg-blue-50 text-blue-700 border-blue-200' },
-    virtual_water_services:        { label: 'Virtual Water Services',        short: 'VWS', badge: 'bg-teal-50 text-teal-700 border-teal-200' },
-    virtual_facilities_services:   { label: 'Virtual Facilities Services',   short: 'VFS', badge: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+    virtual_facilities_services:   { label: 'Virtual Facility Services',   short: 'VFS', badge: 'bg-blue-50 text-blue-700 border-blue-200' },
+    virtual_water_services:        { label: 'Virtual Water Services',      short: 'VWS', badge: 'bg-teal-50 text-teal-700 border-teal-200' },
   }
-  return map[entity]
+  return map[entity] ?? { label: entity, short: entity, badge: '' }
 }
 
 export function formatDate(iso: string): string {

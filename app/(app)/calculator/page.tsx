@@ -1,13 +1,13 @@
 'use client'
 
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import {
   SFG20_TASKS, SFG20_SECTIONS, DISCIPLINE_LABELS, DISCIPLINE_COLORS,
   REGIONS, DISCIPLINES,
 } from '@/lib/data'
 import {
-  getRateCard, saveQuote, generateReference, calcAssetLine, calcManualTask,
+  getRateCard, saveQuote, getQuote, generateReference, calcAssetLine, calcManualTask,
   FREQ_BANDS, getSettings, getRoleRates, saveDraftQuote, loadDraftQuote, clearDraftQuote,
 } from '@/lib/store'
 import type {
@@ -64,17 +64,22 @@ function emptyHours(): Record<FrequencyBand, number> {
 export default function CalculatorPage() {
   const { user } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const editId = searchParams.get('edit')
   const settings = getSettings()
 
   // ── Quote metadata ──────────────────────────────────────────────────────────
   const [quoteType, setQuoteType] = useState<'tender' | 'quote'>('tender')
-  const [businessEntity, setBusinessEntity] = useState<typeof BUSINESS_ENTITIES[0]>('virtual_facilities_management')
+  const [businessEntity, setBusinessEntity] = useState<typeof BUSINESS_ENTITIES[0]>('virtual_facilities_services')
   const [clientName, setClientName] = useState('')
   const [regionId, setRegionId] = useState('london')
   const [profitMarginPct, setProfitMarginPct] = useState(settings.defaultProfitMarginPct)
   const [annualAdjPct, setAnnualAdjPct] = useState(settings.defaultAnnualAdjustmentPct)
   const [vatRate] = useState(settings.vatRate)
   const [notes, setNotes] = useState('')
+  // Edit mode tracks original quote id and reference
+  const [editQuoteId, setEditQuoteId] = useState<string | null>(null)
+  const [editQuoteReference, setEditQuoteReference] = useState<string | null>(null)
 
   // ── Multi-site ───────────────────────────────────────────────────────────────
   const [sites, setSites] = useState<Site[]>([
@@ -128,15 +133,11 @@ export default function CalculatorPage() {
   const [manualDialogOpen, setManualDialogOpen] = useState(false)
   const [draftManual, setDraftManual] = useState<Partial<ManualTask>>({})
 
-  // ── Efficiency dialog ───────────────────────────────────────────────────────
-  const [effDialogLineId, setEffDialogLineId] = useState<string | null>(null)
-  const [effDraft, setEffDraft] = useState<Record<FrequencyBand, number>>(DEFAULT_EFFICIENCY)
-
   // ── Mobilisation dialog ─────────────────────────────────────────────────────
   const [mobDialogOpen, setMobDialogOpen] = useState(false)
   const [draftMob, setDraftMob] = useState<Partial<MobilisationCost>>({})
 
-  // ── One-off cost dialog ─────────────────────────────────────────────────────
+  // ── One-off cost dialog ───────────────────────────────���─────────────────────
   const [oneOffDialogOpen, setOneOffDialogOpen] = useState(false)
   const [draftOneOff, setDraftOneOff] = useState<Partial<OneOffCost>>({})
 
@@ -152,10 +153,38 @@ export default function CalculatorPage() {
   const [draftRestoreBanner, setDraftRestoreBanner] = useState(false)
   const hasMounted = useRef(false)
 
-  // Restore draft on mount
+  // Load existing quote for editing, or restore draft
   useEffect(() => {
     if (hasMounted.current) return
     hasMounted.current = true
+
+    // Edit mode: load the existing quote
+    if (editId) {
+      const existing = getQuote(editId)
+      if (existing) {
+        setEditQuoteId(existing.id)
+        setEditQuoteReference(existing.reference)
+        setQuoteType(existing.quoteType ?? 'tender')
+        setBusinessEntity(existing.businessEntity ?? 'virtual_facilities_services')
+        setClientName(existing.clientName)
+        setRegionId(existing.regionId)
+        setProfitMarginPct(existing.profitMarginPct)
+        setAnnualAdjPct(existing.annualAdjustmentPct)
+        setNotes(existing.notes ?? '')
+        if (existing.sites && existing.sites.length > 0) {
+          setSites(existing.sites)
+          setActiveSiteId(existing.sites[0].id)
+        }
+        setAssetLines(existing.assetLines ?? [])
+        setManualTasks(existing.manualTasks ?? [])
+        setMobilisationCosts(existing.mobilisationCosts ?? [])
+        setSupportCosts(existing.supportCosts ?? [])
+        setOneOffCosts(existing.oneOffCosts ?? [])
+      }
+      return
+    }
+
+    // New quote: try to restore draft
     const saved = loadDraftQuote()
     if (!saved || !saved._savedAt) return
     try {
@@ -263,18 +292,6 @@ export default function CalculatorPage() {
   function updateLineQty(id: string, qty: number) {
     if (qty < 1) return
     setAssetLines((prev) => prev.map((l) => l.id === id ? { ...l, quantity: qty } : l))
-  }
-
-  function openEffDialog(line: AssetLine) {
-    setEffDialogLineId(line.id)
-    setEffDraft({ ...line.efficiencyFactor })
-  }
-
-  function saveEfficiency() {
-    setAssetLines((prev) =>
-      prev.map((l) => l.id === effDialogLineId ? { ...l, efficiencyFactor: { ...effDraft } } : l)
-    )
-    setEffDialogLineId(null)
   }
 
   // ── Manual task actions ──────────────────────────────────────────────────────
@@ -526,9 +543,11 @@ export default function CalculatorPage() {
   function saveAsDraft() {
     if (!clientName.trim()) { alert('Please enter a client name.'); return }
     const region = REGIONS.find((r) => r.id === regionId)!
+    // In edit mode, preserve id, reference, createdAt, createdBy
+    const existingQuote = editQuoteId ? getQuote(editQuoteId) : null
     const quote: Quote = {
-      id: Math.random().toString(36).slice(2),
-      reference: generateReference(quoteType),
+      id: editQuoteId ?? Math.random().toString(36).slice(2),
+      reference: editQuoteReference ?? generateReference(quoteType),
       quoteType,
       businessEntity,
       clientName: clientName.trim(),
@@ -562,8 +581,8 @@ export default function CalculatorPage() {
       totalYear2IncVat: totalYear2 + totalYear2 * (vatRate / 100),
       totalYear3IncVat: totalYear3 + totalYear3 * (vatRate / 100),
       notes: notes.trim(),
-      createdBy: user?.name ?? 'Unknown',
-      createdAt: new Date().toISOString(),
+      createdBy: existingQuote?.createdBy ?? user?.name ?? 'Unknown',
+      createdAt: existingQuote?.createdAt ?? new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
     saveQuote(quote)
@@ -608,9 +627,23 @@ export default function CalculatorPage() {
         )}
 
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold">New Quote / Tender</h1>
-          <p className="text-sm text-muted-foreground mt-1">Build a pricing document from the SFG20 task library</p>
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold">
+              {editQuoteId ? `Edit Quote` : 'New Quote / Tender'}
+            </h1>
+            {editQuoteId && editQuoteReference && (
+              <p className="text-sm text-muted-foreground mt-0.5 font-mono">{editQuoteReference}</p>
+            )}
+            <p className="text-sm text-muted-foreground mt-1">
+              {editQuoteId ? 'Update the pricing document and save changes.' : 'Build a pricing document from the SFG20 task library'}
+            </p>
+          </div>
+          {editQuoteId && (
+            <Button variant="outline" size="sm" onClick={() => router.push(`/quotes/${editQuoteId}`)}>
+              Cancel Edit
+            </Button>
+          )}
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
@@ -955,9 +988,6 @@ export default function CalculatorPage() {
                                     <td className="px-3 py-2.5 text-right text-xs font-semibold">{formatCurrency(annualCost)}</td>
                                     <td className="px-2 py-2.5">
                                       <div className="flex items-center justify-center gap-0.5">
-                                        <button onClick={() => openEffDialog(line)} className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-foreground">
-                                          <Settings2 className="w-3 h-3" />
-                                        </button>
                                         <button onClick={() => setDeleteConfirm({ type: 'asset', id: line.id })} className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-destructive">
                                           <Trash2 className="w-3 h-3" />
                                         </button>
@@ -1088,7 +1118,7 @@ export default function CalculatorPage() {
               <CardContent className="p-0 mt-2">
                 {oneOffCosts.length === 0 ? (
                   <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-                    No one-off costs added. Add licence fees, SimPRO, SFG20 subscriptions, etc.
+                    No one-off costs added. Add licence fees, Simpro, SFG20 subscriptions, etc.
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
@@ -1282,7 +1312,7 @@ export default function CalculatorPage() {
                 </div>
 
                 <Button onClick={saveAsDraft} className="w-full" size="sm">
-                  Save as Draft
+                  {editQuoteId ? 'Save Changes' : 'Save as Draft'}
                 </Button>
               </CardContent>
             </Card>
@@ -1300,16 +1330,30 @@ export default function CalculatorPage() {
             )}
           </DialogHeader>
           <div className="space-y-4 py-2">
-            {/* Available bands info */}
+            {/* Editable SFG20 hours per band */}
             {pendingTask && pendingAvailBands.length > 0 && (
-              <div className="p-2 rounded-md bg-secondary/40 text-xs">
-                <p className="font-semibold text-foreground mb-1">Available frequency bands for this task:</p>
-                <div className="flex flex-wrap gap-2">
+              <div className="p-3 rounded-md bg-secondary/40 space-y-2">
+                <p className="font-semibold text-xs text-foreground">Hours per visit (edit if SFG20 hours need adjusting):</p>
+                <div className="grid grid-cols-2 gap-2">
                   {pendingAvailBands.map((b) => (
-                    <span key={b} className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-background border text-xs">
-                      <span className="font-medium">{BAND_LABELS[b]}</span>
-                      <span className="text-muted-foreground">{pendingTask.sfgHours[b]}h/visit</span>
-                    </span>
+                    <div key={b} className="flex items-center gap-2">
+                      <Label className="text-xs w-20 flex-shrink-0">{BAND_LABELS[b]}</Label>
+                      <Input
+                        type="number"
+                        step="0.25"
+                        min="0"
+                        className="h-7 text-xs w-20"
+                        value={draftLine.sfgHours?.[b] ?? pendingTask.sfgHours[b] ?? 0}
+                        onChange={(e) => setDraftLine({
+                          ...draftLine,
+                          sfgHours: {
+                            ...(draftLine.sfgHours ?? { ...emptyHours(), ...pendingTask.sfgHours }),
+                            [b]: Number(e.target.value),
+                          },
+                        })}
+                      />
+                      <span className="text-xs text-muted-foreground">h/visit</span>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -1516,36 +1560,6 @@ export default function CalculatorPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Efficiency Dialog */}
-      <Dialog open={!!effDialogLineId} onOpenChange={(open) => !open && setEffDialogLineId(null)}>
-        <DialogContent className="max-w-md max-h-96 overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edit Efficiency Factors</DialogTitle>
-            <DialogDescription>Adjust per-band efficiency multipliers (100% = standard SFG20 hours).</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3 py-2">
-            {FREQ_BANDS.map((band) => (
-              <div key={band} className="flex items-center justify-between">
-                <Label className="text-xs">{BAND_LABELS[band]}</Label>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono w-8 text-right">{(effDraft[band] * 100).toFixed(0)}%</span>
-                  <input
-                    type="range" min="0" max="2" step="0.05"
-                    value={effDraft[band]}
-                    onChange={(e) => setEffDraft({ ...effDraft, [band]: Number(e.target.value) })}
-                    className="w-32"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEffDialogLineId(null)} size="sm">Cancel</Button>
-            <Button onClick={saveEfficiency} size="sm">Save</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       {/* Mobilisation Dialog */}
       <Dialog open={mobDialogOpen} onOpenChange={setMobDialogOpen}>
         <DialogContent className="max-w-md">
@@ -1589,12 +1603,12 @@ export default function CalculatorPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>One-Off Cost</DialogTitle>
-            <DialogDescription>Add a one-off cost such as a licence fee, SimPRO subscription, or SFG20 access.</DialogDescription>
+            <DialogDescription>Add a one-off cost such as a licence fee, Simpro subscription, or SFG20 access.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
               <Label className="text-xs">Description</Label>
-              <Input value={draftOneOff.description || ''} onChange={(e) => setDraftOneOff({ ...draftOneOff, description: e.target.value })} placeholder="e.g. SimPRO Licence" className="mt-1 h-8 text-xs" />
+              <Input value={draftOneOff.description || ''} onChange={(e) => setDraftOneOff({ ...draftOneOff, description: e.target.value })} placeholder="e.g. Simpro Licence" className="mt-1 h-8 text-xs" />
             </div>
             <div>
               <Label className="text-xs">Amount (£)</Label>

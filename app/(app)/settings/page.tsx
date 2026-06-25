@@ -45,7 +45,7 @@ export default function SettingsPage() {
 
   // System (admin / pricing_manager) — load from store
   const storedSettings = getSettings()
-  const [companyName, setCompanyName] = useState(storedSettings.companyName ?? 'Virtual FM Group')
+  const [companyName, setCompanyName] = useState(storedSettings.companyName ?? 'Virtual Facility Services')
   const [defaultMargin, setDefaultMargin] = useState(String(storedSettings.defaultProfitMarginPct ?? 17))
   const [defaultAdjustment, setDefaultAdjustment] = useState(String(storedSettings.defaultAnnualAdjustmentPct ?? 2))
   const [defaultMarkup, setDefaultMarkup] = useState(String(storedSettings.defaultMobilisationMarkup ?? 13.64))
@@ -394,9 +394,8 @@ export default function SettingsPage() {
                       <p className="text-sm font-semibold">Demo Accounts</p>
                       <div className="space-y-2 text-sm">
                         {[
-                          { email: 'kenny@example.com', role: 'admin' as const },
-                          { email: 'sarah@example.com', role: 'pricing_manager' as const },
-                          { email: 'james@example.com', role: 'viewer' as const },
+                          { email: 'abraham@virtualfs.co.uk', role: 'admin' as const },
+                          { email: 'grant@virtualfs.co.uk', role: 'admin' as const },
                         ].map(({ email, role }) => (
                           <div key={email} className="flex items-center justify-between">
                             <span className="text-muted-foreground">{email}</span>

@@ -17,7 +17,7 @@ import {
 import {
   ArrowLeft, MapPin, Building2, Loader2, Pencil,
   Sparkles, TrendingUp, TrendingDown, Minus, AlertTriangle, CheckCircle2, Lightbulb,
-  FileText, Send, CheckCircle, XCircle, Clock, Droplets,
+  FileText, Send, CheckCircle, XCircle, Clock, Droplets, Eye, ExternalLink, Share2,
 } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils-app'

@@ -18,7 +18,9 @@ export default function RootPage() {
     if (hydrated && user) router.replace('/dashboard')
   }, [hydrated, user, router])
 
-  if (!hydrated) return null
+  // Keep the entry route useful while sessionStorage is being read. Returning null
+  // here made the preview appear completely blank if hydration was delayed.
+  if (!hydrated) return <LoginPage />
   if (user) return null
   return <LoginPage />
 }

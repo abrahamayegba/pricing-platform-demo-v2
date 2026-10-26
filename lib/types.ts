@@ -164,6 +164,7 @@ export interface AssetLine {
   activeBands: FrequencyBand[]  // bands included in pricing (from criticality)
   criticality: CriticalityLevel
   isManual: false          // always false for SFG20 tasks
+  priceOverride?: number   // optional annual client price override
 }
 
 // ── Manual Task ──────────────────────────────────────────────────────────────
@@ -179,6 +180,7 @@ export interface ManualTask {
   hoursPerVisit: number
   visitsPerYear: number
   efficiencyFactor: number
+  priceOverride?: number   // optional annual client price override
 }
 
 // Derived per line, computed on the fly

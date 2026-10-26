@@ -236,6 +236,7 @@ export const SFG20_TASKS: SFG20Task[] = [
 // ── Regions ───────────────────────────────────────────────────────────────────
 
 export const REGIONS: Region[] = [
+  { id: 'scotland',     name: 'Scotland' },
   { id: 'london',       name: 'London' },
   { id: 'south_east',   name: 'South East' },
   { id: 'south_west',   name: 'South West' },
@@ -244,7 +245,6 @@ export const REGIONS: Region[] = [
   { id: 'north_west',   name: 'North West' },
   { id: 'north_east',   name: 'North East' },
   { id: 'yorkshire',    name: 'Yorkshire & Humber' },
-  { id: 'scotland',     name: 'Scotland' },
   { id: 'wales',        name: 'Wales' },
 ]
 

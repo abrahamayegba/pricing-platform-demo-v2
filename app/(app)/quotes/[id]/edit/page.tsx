@@ -75,7 +75,7 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
   const [quoteType, setQuoteType] = useState<'tender' | 'quote'>('tender')
   const [businessEntity, setBusinessEntity] = useState<typeof BUSINESS_ENTITIES[0]>('virtual_facilities_services')
   const [clientName, setClientName] = useState('')
-  const [regionId, setRegionId] = useState('london')
+  const [regionId, setRegionId] = useState('scotland')
   const [profitMarginPct, setProfitMarginPct] = useState(settings.defaultProfitMarginPct)
   const [annualAdjPct, setAnnualAdjPct] = useState(settings.defaultAnnualAdjustmentPct)
   const [vatRate] = useState(settings.vatRate)
@@ -212,6 +212,7 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
       sfgDescription: task.description,
       sfgHours: { ...emptyHours(), ...task.sfgHours },
       efficiencyFactor: { ...DEFAULT_EFFICIENCY },
+      priceOverride: undefined,
     })
     setAddDialogOpen(true)
   }
@@ -239,6 +240,7 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
       activeBands,
       criticality: selectedCriticality,
       isManual: false,
+      priceOverride: draftLine.priceOverride,
     }
     setAssetLines((prev) => [...prev, line])
     setAddDialogOpen(false)
@@ -278,6 +280,7 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
       criticality: editAssetCriticality,
       quantity: Number(editAssetDraft.quantity) || 1,
       isManual: false,
+      priceOverride: editAssetDraft.priceOverride,
     } as AssetLine
 
     setAssetLines((prev) => prev.map((l) => l.id === editingAsset.id ? updated : l))
@@ -297,6 +300,7 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
       hoursPerVisit: 2,
       visitsPerYear: 4,
       efficiencyFactor: 1,
+      priceOverride: undefined,
     })
     setManualDialogOpen(true)
   }
@@ -314,6 +318,7 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
       hoursPerVisit: draftManual.hoursPerVisit ?? 2,
       visitsPerYear: draftManual.visitsPerYear ?? 4,
       efficiencyFactor: draftManual.efficiencyFactor ?? 1,
+      priceOverride: draftManual.priceOverride,
     }
     setManualTasks((prev) => {
       const idx = prev.findIndex((t) => t.id === task.id)
@@ -1192,6 +1197,7 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
             <div><Label className="text-xs">Location</Label><Input value={draftLine.location || ''} onChange={(e) => setDraftLine({ ...draftLine, location: e.target.value })} placeholder="e.g. Ground Floor" className="mt-1 h-8 text-xs" /></div>
             <div><Label className="text-xs">Make/Model</Label><Input value={draftLine.makeModel || ''} onChange={(e) => setDraftLine({ ...draftLine, makeModel: e.target.value })} placeholder="e.g. Schneider" className="mt-1 h-8 text-xs" /></div>
             <div><Label className="text-xs">Quantity</Label><Input type="number" value={draftLine.quantity || 1} onChange={(e) => setDraftLine({ ...draftLine, quantity: Number(e.target.value) })} min="1" className="mt-1 h-8 text-xs" /></div>
+            <div><Label className="text-xs">Annual price (£, optional)</Label><Input type="number" step="0.01" min="0" value={draftLine.priceOverride ?? ''} onChange={(e) => setDraftLine({ ...draftLine, priceOverride: e.target.value === '' ? undefined : Number(e.target.value) })} placeholder={`Regional rate: ${formatCurrency(calcAssetLine({ ...(draftLine as AssetLine), activeBands: previewBands, quantity: Number(draftLine.quantity) || 1 } as AssetLine, getSalesRate(draftLine.discipline ?? pendingTask?.discipline ?? 'fabric')).annualCost)}`} className="mt-1 h-8 text-xs" /><p className="text-xs text-muted-foreground mt-1">Leave blank to use the regional rate.</p></div>
             <Separator />
             <div>
               <Label className="text-xs font-semibold block mb-1">Criticality Level</Label>
@@ -1275,7 +1281,7 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
             <div><Label className="text-xs">Name / Description</Label><Input value={editAssetDraft.sfgDescription || ''} onChange={(e) => setEditAssetDraft({ ...editAssetDraft, sfgDescription: e.target.value })} className="mt-1 h-8 text-xs" /></div>
             <div><Label className="text-xs">Location</Label><Input value={editAssetDraft.location || ''} onChange={(e) => setEditAssetDraft({ ...editAssetDraft, location: e.target.value })} placeholder="e.g. Plant Room" className="mt-1 h-8 text-xs" /></div>
             <div><Label className="text-xs">Make/Model</Label><Input value={editAssetDraft.makeModel || ''} onChange={(e) => setEditAssetDraft({ ...editAssetDraft, makeModel: e.target.value })} placeholder="e.g. Schneider" className="mt-1 h-8 text-xs" /></div>
-            <div><Label className="text-xs">Quantity</Label><Input type="number" value={editAssetDraft.quantity || 1} onChange={(e) => setEditAssetDraft({ ...editAssetDraft, quantity: Number(e.target.value) })} min="1" className="mt-1 h-8 text-xs" /></div>
+            <div><Label className="text-xs">Annual price (£, optional)</Label><Input type="number" step="0.01" min="0" value={editAssetDraft.priceOverride ?? ''} onChange={(e) => setEditAssetDraft({ ...editAssetDraft, priceOverride: e.target.value === '' ? undefined : Number(e.target.value) })} placeholder="Leave blank for regional rate" className="mt-1 h-8 text-xs" /><p className="text-xs text-muted-foreground mt-1">Leave blank to use the regional rate.</p></div>
             <Separator />
             <div>
               <Label className="text-xs font-semibold block mb-1">Criticality Level</Label>
@@ -1348,6 +1354,7 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
               </div>
               <div><Label className="text-xs">Location</Label><Input value={draftManual.location || ''} onChange={(e) => setDraftManual({ ...draftManual, location: e.target.value })} placeholder="e.g. External" className="mt-1 h-8 text-xs" /></div>
             </div>
+            <div><Label className="text-xs">Annual price (£, optional)</Label><Input type="number" step="0.01" min="0" value={draftManual.priceOverride ?? ''} onChange={(e) => setDraftManual({ ...draftManual, priceOverride: e.target.value === '' ? undefined : Number(e.target.value) })} placeholder="Leave blank for regional rate" className="mt-1 h-8 text-xs" /><p className="text-xs text-muted-foreground mt-1">Leave blank to use the regional rate.</p></div>
             <div className="grid grid-cols-3 gap-3">
               <div><Label className="text-xs">Quantity</Label><Input type="number" value={draftManual.quantity || 1} onChange={(e) => setDraftManual({ ...draftManual, quantity: Number(e.target.value) })} min="1" className="mt-1 h-8 text-xs" /></div>
               <div><Label className="text-xs">Hrs / Visit</Label><Input type="number" step="0.5" value={draftManual.hoursPerVisit || 2} onChange={(e) => setDraftManual({ ...draftManual, hoursPerVisit: Number(e.target.value) })} min="0.5" className="mt-1 h-8 text-xs" /></div>
@@ -1355,7 +1362,7 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
             </div>
             <div className="p-2 bg-secondary/40 rounded text-xs text-muted-foreground">
               Annual hours: <span className="font-semibold text-foreground">{((draftManual.hoursPerVisit ?? 2) * (draftManual.visitsPerYear ?? 4) * (draftManual.quantity ?? 1)).toFixed(1)}h</span>{' '}
-              at {formatCurrency(getSalesRate(draftManual.discipline ?? 'fabric'))}/hr = <span className="font-semibold text-foreground ml-1">{formatCurrency((draftManual.hoursPerVisit ?? 2) * (draftManual.visitsPerYear ?? 4) * (draftManual.quantity ?? 1) * getSalesRate(draftManual.discipline ?? 'fabric'))}/yr</span>
+              at {formatCurrency(getSalesRate(draftManual.discipline ?? 'fabric'))}/hr = <span className="font-semibold text-foreground ml-1">{formatCurrency(draftManual.priceOverride ?? ((draftManual.hoursPerVisit ?? 2) * (draftManual.visitsPerYear ?? 4) * (draftManual.quantity ?? 1) * getSalesRate(draftManual.discipline ?? 'fabric')))}/yr</span>
             </div>
           </div>
           <DialogFooter>

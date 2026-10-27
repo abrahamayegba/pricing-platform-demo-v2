@@ -75,6 +75,19 @@ export default function CalculatorPage() {
   const [annualAdjPct, setAnnualAdjPct] = useState(settings.defaultAnnualAdjustmentPct)
   const [vatRate] = useState(settings.vatRate)
   const [notes, setNotes] = useState('')
+  const [importOpen, setImportOpen] = useState(false)
+  const [simproQuoteId, setSimproQuoteId] = useState('')
+  const [simproCompany, setSimproCompany] = useState<'vfs' | 'water'>('vfs')
+
+  function importSimproQuote() {
+    const quoteId = simproQuoteId.trim() || '1324'
+    const importedSite = sites[0]
+    setClientName(simproCompany === 'water' ? 'Crerar Hotels Group' : 'SFH Opco Limited (Casa by Moda)')
+    setBusinessEntity(simproCompany === 'water' ? 'virtual_water_services' : 'virtual_facilities_services')
+    setSites([{ ...importedSite, name: simproCompany === 'water' ? 'Oban Bay' : 'Vista Park', address: simproCompany === 'water' ? 'Oban Bay, PA34 5AE' : 'Vista Park, North Lodge Wynd, G33 4BG' }])
+    setNotes(`Imported from Simpro quote ${quoteId}. This demo import includes the customer, site, address and quote narrative from Simpro.`)
+    setImportOpen(false)
+  }
 
   // ── Multi-site ───────────────────────────────────────────────────────────────
   const [sites, setSites] = useState<Site[]>([
@@ -643,9 +656,14 @@ export default function CalculatorPage() {
               Build a pricing document from the SFG20 task library
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => router.push('/quotes')}>
-            Cancel
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
+              Import from Simpro
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => router.push('/quotes')}>
+              Cancel
+            </Button>
+          </div>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
@@ -826,7 +844,16 @@ export default function CalculatorPage() {
                             ))}
                           </SelectContent>
                         </Select>
-                        {site.address && <p className="mt-1 text-xs text-muted-foreground">{site.address}</p>}
+                        <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                          <div>
+                            <Label className="text-xs">Site name</Label>
+                            <Input value={site.name} onChange={(e) => updateSite(site.id, 'name', e.target.value)} placeholder="Enter a new site name" className="mt-1 h-8 text-xs" />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Address</Label>
+                            <Input value={site.address} onChange={(e) => updateSite(site.id, 'address', e.target.value)} placeholder="Enter the site address" className="mt-1 h-8 text-xs" />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1726,6 +1753,32 @@ export default function CalculatorPage() {
           </div>
         </div>
       </div>
+
+      <Dialog open={importOpen} onOpenChange={setImportOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Import quote from Simpro</DialogTitle>
+            <DialogDescription>Demo import: enter a Simpro quote number and choose the company. The imported customer and site details will be editable before saving.</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 py-2">
+            <div>
+              <Label htmlFor="simpro-quote-id">Simpro quote ID</Label>
+              <Input id="simpro-quote-id" value={simproQuoteId} onChange={(e) => setSimproQuoteId(e.target.value)} placeholder="e.g. 1324" className="mt-1" />
+            </div>
+            <div>
+              <Label>Company</Label>
+              <Select value={simproCompany} onValueChange={(value) => setSimproCompany(value as 'vfs' | 'water')}>
+                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="vfs">Virtual Facilities Services (VFS)</SelectItem>
+                  <SelectItem value="water">Virtual Water Services</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter><Button variant="outline" onClick={() => setImportOpen(false)}>Cancel</Button><Button onClick={importSimproQuote}>Import quote</Button></DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Cost calculation dialog */}
       <Dialog open={!!calculationLine} onOpenChange={(open) => !open && setCalculationLine(null)}>

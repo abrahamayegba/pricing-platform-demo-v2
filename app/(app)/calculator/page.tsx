@@ -81,12 +81,42 @@ export default function CalculatorPage() {
 
   function importSimproQuote() {
     const quoteId = simproQuoteId.trim() || '1324'
-    const importedSite = sites[0]
-    setClientName(simproCompany === 'water' ? 'Crerar Hotels Group' : 'SFH Opco Limited (Casa by Moda)')
-    setBusinessEntity(simproCompany === 'water' ? 'virtual_water_services' : 'virtual_facilities_services')
-    setSites([{ ...importedSite, name: simproCompany === 'water' ? 'Oban Bay' : 'Vista Park', address: simproCompany === 'water' ? 'Oban Bay, PA34 5AE' : 'Vista Park, North Lodge Wynd, G33 4BG' }])
-    setNotes(`Imported from Simpro quote ${quoteId}. This demo import includes the customer, site, address and quote narrative from Simpro.`)
+    const now = new Date().toISOString()
+    const isWater = simproCompany === 'water'
+    const site: Site = isWater
+      ? { id: 'simpro-site-152', name: 'Oban Bay', address: 'Oban Bay' }
+      : { id: 'simpro-site-vista-park', name: 'Vista Park', address: 'Vista Park, North Lodge Wynd, G33 4BG' }
+    const importedTasks: ManualTask[] = isWater
+      ? [{
+          id: 'simpro-1324-cwst-clean', siteId: site.id, description: 'CWST clean', discipline: 'water_hygiene',
+          location: 'CWST 1', makeModel: '', quantity: 1, hoursPerVisit: 0, visitsPerYear: 1,
+          efficiencyFactor: 1, annualCostOverride: 1050,
+        }]
+      : [
+          { id: 'simpro-1324-winter-blitz', siteId: site.id, description: 'Initial Winter Blitz', discipline: 'grounds_maintenance', location: 'All agreed areas', makeModel: '', quantity: 1, hoursPerVisit: 0, visitsPerYear: 1, efficiencyFactor: 1, annualCostOverride: 2730 },
+          { id: 'simpro-1324-winter-maintenance', siteId: site.id, description: 'Winter Maintenance – November to March', discipline: 'grounds_maintenance', location: 'All agreed areas', makeModel: '', quantity: 5, hoursPerVisit: 0, visitsPerYear: 5, efficiencyFactor: 1, annualCostOverride: 1562.50 },
+          { id: 'simpro-1324-summer-maintenance', siteId: site.id, description: 'Summer Maintenance – April to October (fortnightly visits)', discipline: 'grounds_maintenance', location: 'All agreed areas', makeModel: '', quantity: 7, hoursPerVisit: 0, visitsPerYear: 7, efficiencyFactor: 1, annualCostOverride: 9225.02 },
+        ]
+    const totalExVat = isWater ? 1050 : 13517.52
+    const vat = isWater ? 210 : 2703.50
+    const importedQuote: Quote = {
+      id: `simpro-${quoteId}-${Date.now()}`, reference: `SIMPRO-${quoteId}`, quoteType: 'quote',
+      businessEntity: isWater ? 'virtual_water_services' : 'virtual_facilities_services',
+      clientName: isWater ? 'Crerar Hotels Group' : 'SFH Opco Limited (Casa by Moda)', sites: [site],
+      siteName: site.name, siteAddress: site.address, regionId: 'scotland', regionName: 'Scotland', status: 'draft',
+      assetLines: [], manualTasks: importedTasks, mobilisationCosts: [], supportCosts: [], oneOffCosts: [],
+      ppmSubtotal: 0, manualTaskSubtotal: totalExVat, mobilisationTotal: 0, supportTotal: 0, oneOffTotal: 0,
+      subtotalBeforeMargin: totalExVat, profitMarginPct: 0, marginAmount: 0, markupPct: 0, annualAdjustmentPct: 0,
+      vatRate: 20, vatAmount: vat, totalYear1: totalExVat, totalYear2: totalExVat, totalYear3: totalExVat,
+      totalYear1IncVat: totalExVat + vat, totalYear2IncVat: totalExVat + vat, totalYear3IncVat: totalExVat + vat,
+      notes: isWater
+        ? 'Simpro quote 619 | Customer: Crerar Hotels Group | Contact: Derek Anderson (dereka@crerarhotels.com, 07807395926) | Site contact: Marc Gardner (marc.gardner@crerarhotels.com) | Date issued: 06/04/2026 | Due: 28/05/2026 | Request: CWST clean | Job: 5139 | Order: #49178223 | Stage: Complete | Background: Following the last PPM one of the CWST has sediment build up. Proposal: Using Hydrogen Peroxide, clean and disinfect the cold water storage tanks on the main roof. Scope: verify overflow, complete a site-specific risk assessment, post warning notes, drain and clean tanks, monitor drainage, remove debris, disinfect with 1000ppm Hydrogen Peroxide for 10 minutes, then refill and flush. Simpro totals: £1,050.00 ex VAT, £210.00 VAT, £1,260.00 inc VAT. Cost centre: Water Hygiene Planned. Status: Quote Converted.'
+        : 'Simpro quote 1324 | Valid for 30 days | Customer: SFH Opco Limited (Casa by Moda) | Site: Vista Park, North Lodge Wynd, G33 4BG | Date: 27/10/2026 | Background: Following our recent discussions regarding Vista Park, proposed costs and recommended scope for the initial site tidy-up and ongoing grounds maintenance programme. Initial Winter Blitz: cutting, strimming and edging grass, pruning shrubs, full litter pick, blowing and collecting leaves, green waste removal, restore hedge at front of estate. Winter Maintenance (November to March): monthly visits, full litter pick, leaf collection, waste removal. Summer Maintenance (April to October): fortnightly visits, grass cutting, strimming, edging, litter pick, blowing hardstanding, waste removal, weed control and hedge maintenance. Additional seasonal maintenance: hedge and shrub pruning in April, July and October. Terms: works priced during normal working hours; quotation valid for 30 days. Simpro totals: £13,517.52 ex VAT, £2,703.50 VAT, £16,221.02 inc VAT. Labour: £13,517.52. Prepared by Abraham Ayegba.',
+      createdBy: user?.name ?? 'Unknown', createdAt: now, updatedAt: now,
+    }
+    saveQuote(importedQuote)
     setImportOpen(false)
+    router.push(`/client/${importedQuote.id}`)
   }
 
   // ── Multi-site ───────────────────────────────────────────────────────────────
@@ -1758,7 +1788,7 @@ export default function CalculatorPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Import quote from Simpro</DialogTitle>
-            <DialogDescription>Demo import: enter a Simpro quote number and choose the company. The imported customer and site details will be editable before saving.</DialogDescription>
+            <DialogDescription>This does not start or populate a new quote. It creates a client-view copy of the Simpro quote and opens the existing Print / PDF view.</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 py-2">
             <div>

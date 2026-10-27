@@ -51,7 +51,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <Card className="border-0 shadow-xl">
+        <Card className="border-0 shadow-xl gap-2">
           <CardHeader className="pb-4">
             <CardTitle className="text-xl">Sign in</CardTitle>
             <CardDescription>
@@ -123,9 +123,6 @@ export default function LoginPage() {
                 <RotateCcw data-icon="inline-start" />
                 Reset demo data
               </Button>
-              <p className="text-xs text-center text-muted-foreground">
-                Clears saved quotes, rates, settings, and the current demo session.
-              </p>
             </form>
 
             <div className="mt-5 pt-4 border-t">

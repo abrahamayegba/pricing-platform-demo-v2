@@ -1,13 +1,31 @@
 // ── Discipline / Role ────────────────────────────────────────────────────────
 
 export type Discipline =
-  | 'electrical'
-  | 'mechanical'
-  | 'gas'
-  | 'ac_refrigeration'
-  | 'fabric'
-  | 'me'
-  | 'water_hygiene'
+  | "electrical"
+  | "mechanical"
+  | "gas"
+  | "ac_refrigeration"
+  | "fabric"
+  | "me"
+  | "water_hygiene"
+  | "plumbing"
+  | "security"
+  | "fire_safety"
+  | "controls"
+  | "cleaning"
+  | "general"
+  | "survey"
+  | "lifts"
+  | "grounds_maintenance"
+  | "building_services"
+  | "drainage"
+  | "legionella"
+  | "refrigeration"
+  | "ventilation"
+  | "roofing"
+  | "doors_gates"
+  | "pest_control"
+  | "waste_management";
 
 // ── Business Entities ────────────────────────────────────────────────────────
 
@@ -46,25 +64,32 @@ export const QUOTE_TYPE_DESCRIPTIONS: Record<QuoteType, string> = {
 
 // ── SFG20 Task from the library ──────────────────────────────────────────────
 
+export type SFG20Hours = {
+  "0U"?: number;
+  "1D"?: number;
+  "1W"?: number;
+  "1M"?: number;
+  "2M"?: number;
+  "3M"?: number;
+  "4M"?: number;
+  "5M"?: number;
+  "6M"?: number;
+  "12M"?: number;
+  "2Y"?: number;
+  "4Y"?: number;
+  "5Y"?: number;
+  "12M-5Y"?: number;
+};
+
 export interface SFG20Task {
-  id: string
-  code: string
-  section: string
-  sectionCode: string
-  description: string
-  discipline: Discipline
-  sfgHours: {
-    '1W'?: number
-    '1M'?: number
-    '2M'?: number
-    '3M'?: number
-    '4M'?: number
-    '5M'?: number
-    '6M'?: number
-    '12M'?: number
-    '12M-5Y'?: number
-  }
-  notes?: string
+  id: string;
+  code: string;
+  section: string;
+  sectionCode: string;
+  description: string;
+  discipline: Discipline;
+  sfgHours: SFG20Hours;
+  notes?: string;
 }
 
 export type FrequencyBand = '1W' | '1M' | '2M' | '3M' | '4M' | '5M' | '6M' | '12M'

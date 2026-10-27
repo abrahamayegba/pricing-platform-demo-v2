@@ -1,9 +1,9 @@
+import { DEFAULT_RATE_CARDS } from './data'
 import type {
   RateCard, Quote, QuoteStatus, AssetLine, FrequencyBand,
   MobilisationCost, SupportCost, ManualTask, OneOffCost, AppSettings,
   RoleRate, BusinessEntity, QuoteType,
 } from './types'
-import { DEFAULT_RATE_CARDS } from './data'
 import { VISITS_PER_YEAR, DEFAULT_APP_SETTINGS } from './types'
 
 const KEYS = {

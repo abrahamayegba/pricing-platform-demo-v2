@@ -245,7 +245,6 @@ export const REGIONS: Region[] = [
   { id: 'north_west',   name: 'North West' },
   { id: 'north_east',   name: 'North East' },
   { id: 'yorkshire',    name: 'Yorkshire & Humber' },
-  { id: 'scotland',     name: 'Scotland' },
   { id: 'wales',        name: 'Wales' },
 ]
 
@@ -372,16 +371,6 @@ export const DEFAULT_RATE_CARDS: RateCard[] = [
     regionId: 'yorkshire',
     disciplines: makeRates(
       { electrical: 16.50, mechanical: 15.80, gas: 16.80, ac_refrigeration: 16.80, fabric: 14.20, me: 16.50, water_hygiene: 14.80 },
-      17
-    ),
-    overheadAndProfitLabour: 17,
-    overheadAndProfitMaterials: 17,
-    sfgEfficiencyIndex: 1.0,
-  },
-  {
-    regionId: 'scotland',
-    disciplines: makeRates(
-      { electrical: 17.20, mechanical: 16.50, gas: 17.80, ac_refrigeration: 17.80, fabric: 14.80, me: 17.20, water_hygiene: 15.20 },
       17
     ),
     overheadAndProfitLabour: 17,

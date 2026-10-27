@@ -1722,7 +1722,7 @@ export default function CalculatorPage() {
 
       {/* Add SFG20 Asset Dialog */}
       <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add SFG20 Asset</DialogTitle>
             {pendingTask && (
@@ -1781,7 +1781,7 @@ export default function CalculatorPage() {
               <div>
                 <Label className="text-xs">Site</Label>
                 <Select value={targetSiteId} onValueChange={setTargetSiteId}>
-                  <SelectTrigger className="mt-1 h-8 text-xs">
+                  <SelectTrigger className="mt-1 h-8 text-xs w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1976,7 +1976,7 @@ export default function CalculatorPage() {
 
       {/* Edit SFG20 Asset Dialog */}
       <Dialog open={editAssetDialogOpen} onOpenChange={setEditAssetDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit SFG20 Asset</DialogTitle>
             {editingAsset && (
@@ -2014,7 +2014,7 @@ export default function CalculatorPage() {
               <div>
                 <Label className="text-xs">Site</Label>
                 <Select value={editAssetDraft.siteId || ''} onValueChange={(v) => setEditAssetDraft({ ...editAssetDraft, siteId: v })}>
-                  <SelectTrigger className="mt-1 h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="mt-1 h-8 text-xs w-full"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {sites.map((s, i) => (<SelectItem key={s.id} value={s.id}>{s.name || `Site ${i + 1}`}</SelectItem>))}
                   </SelectContent>

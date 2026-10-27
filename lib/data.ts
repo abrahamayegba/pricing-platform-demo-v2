@@ -308,6 +308,16 @@ export const DEFAULT_RATE_CARDS: RateCard[] = [
     sfgEfficiencyIndex: 1.0,
   },
   {
+    regionId: 'london',
+    disciplines: makeRates(
+      { electrical: 36.5214, mechanical: 35.5385, gas: 37.3077, ac_refrigeration: 37.3077, fabric: 32.6410, me: 36.6154, water_hygiene: 33.3675 },
+      17
+    ),
+    overheadAndProfitLabour: 17,
+    overheadAndProfitMaterials: 17,
+    sfgEfficiencyIndex: 1.0,
+  },
+  {
     regionId: 'south_east',
     disciplines: makeRates(
       { electrical: 19.50, mechanical: 18.80, gas: 20.00, ac_refrigeration: 20.00, fabric: 16.80, me: 19.50, water_hygiene: 17.40 },

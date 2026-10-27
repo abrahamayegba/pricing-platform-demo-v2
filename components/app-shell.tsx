@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import {
-  LayoutDashboard, BookOpen, MapPin,
+  LayoutDashboard, BookOpen, MapPin, Building2,
   Calculator, FileText, ChevronRight, LogOut, Settings, Database,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -19,6 +19,7 @@ const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/tasks', label: 'SFG20 Library', icon: BookOpen },
   { href: '/rates', label: 'Regional Rates', icon: MapPin },
+  { href: '/sites', label: 'Sites', icon: Building2 },
   { href: '/calculator', label: 'New Quote', icon: Calculator },
   { href: '/quotes', label: 'Quotes', icon: FileText },
   { href: '/schema', label: 'DB Schema', icon: Database },

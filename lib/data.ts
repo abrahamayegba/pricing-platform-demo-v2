@@ -1,5 +1,5 @@
 import { DEFAULT_BASE_RATES } from "./defaultBaseRates";
-import type { SFG20Task, Region, RateCard, Discipline } from "./types";
+import type { SFG20Task, Region, RateCard, Discipline, Site } from "./types";
 
 // ── Sections ─────────────────────────────────────────────────────────────────
 
@@ -926,6 +926,13 @@ export const SFG20_TASKS: SFG20Task[] = [
 ];
 
 // ── Regions ───────────────────────────────────────────────────────────────────
+
+export const DEMO_SITES: Site[] = [
+  { id: 'simpro-site-001', name: 'Riverside Business Park', address: '14 Riverside Way, Glasgow G5 8AA' },
+  { id: 'simpro-site-002', name: 'Northgate Retail Centre', address: '82 Northgate Road, Edinburgh EH7 4QX' },
+  { id: 'simpro-site-003', name: 'Westfield House', address: '6 Westfield Avenue, Manchester M15 4FN' },
+  { id: 'simpro-site-004', name: 'Harbour Exchange', address: '22 Dockside Street, London E14 9GE' },
+]
 
 export const REGIONS: Region[] = [
   { id: "scotland", name: "Scotland" },

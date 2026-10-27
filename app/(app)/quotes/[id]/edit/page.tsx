@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef, use } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   SFG20_TASKS, SFG20_SECTIONS, DISCIPLINE_LABELS, DISCIPLINE_COLORS,
-  REGIONS, DISCIPLINES,
+  REGIONS, DISCIPLINES, DEMO_SITES,
 } from '@/lib/data'
 import {
   getRateCard, saveQuote, getQuote, generateReference, calcAssetLine, calcManualTask,
@@ -41,7 +41,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import {
   Search, Plus, Trash2, ChevronDown, ChevronUp, Settings2,
-  AlertCircle, Building2, MapPin, PlusCircle, ArrowLeft, X,
+  AlertCircle, Building2, MapPin, PlusCircle, ArrowLeft, X, Info,
 } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils-app'
 import { useAuth } from '@/lib/auth-context'
@@ -135,6 +135,7 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
   const [editAssetDraft, setEditAssetDraft] = useState<Partial<AssetLine>>({})
   const [editAssetCriticality, setEditAssetCriticality] = useState<CriticalityLevel>('critical')
   const [editAssetCustomBands, setEditAssetCustomBands] = useState<FrequencyBand[]>([])
+  const [calculationLine, setCalculationLine] = useState<AssetLine | null>(null)
 
   // ── Manual task dialog ───────────────────────────────────────────────────────
   const [manualDialogOpen, setManualDialogOpen] = useState(false)
@@ -705,14 +706,22 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
                         </button>
                       )}
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 gap-2">
                       <div>
-                        <Label className="text-xs">Site Name</Label>
-                        <Input value={site.name} onChange={(e) => updateSite(site.id, 'name', e.target.value)} placeholder="e.g. One Canada Square" className="mt-1 h-8 text-xs" onFocus={() => setActiveSiteId(site.id)} />
-                      </div>
-                      <div>
-                        <Label className="text-xs">Address</Label>
-                        <Input value={site.address} onChange={(e) => updateSite(site.id, 'address', e.target.value)} placeholder="Full address" className="mt-1 h-8 text-xs" onFocus={() => setActiveSiteId(site.id)} />
+                        <Label className="text-xs">Simpro site</Label>
+                        <Select value={DEMO_SITES.find((demo) => demo.name === site.name)?.id ?? ''} onValueChange={(value) => {
+                          const selected = DEMO_SITES.find((demo) => demo.id === value)
+                          if (selected) {
+                            setSites((prev) => prev.map((current) => current.id === site.id ? { ...current, name: selected.name, address: selected.address } : current))
+                            setActiveSiteId(site.id)
+                          }
+                        }}>
+                          <SelectTrigger className="mt-1 h-8 text-xs"><SelectValue placeholder="Select a site from Simpro" /></SelectTrigger>
+                          <SelectContent>
+                            {DEMO_SITES.map((demo) => <SelectItem key={demo.id} value={demo.id}>{demo.name} — {demo.address}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                        {site.address && <p className="mt-1 text-xs text-muted-foreground">{site.address}</p>}
                       </div>
                     </div>
                   </div>
@@ -851,7 +860,14 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
                                       <Badge variant="outline" className={cn('text-xs py-0', CRITICALITY_COLORS[line.criticality])}>{CRITICALITY_SHORT[line.criticality]}</Badge>
                                     </td>
                                     <td className="px-3 py-2.5 text-right text-xs font-medium">{totalFlexedHours.toFixed(1)}h</td>
-                                    <td className="px-3 py-2.5 text-right text-xs font-semibold">{formatCurrency(annualCost)}</td>
+                                    <td className="px-3 py-2.5 text-right text-xs font-semibold">
+                                      <div className="flex items-center justify-end gap-1">
+                                        {formatCurrency(annualCost)}
+                                        <button type="button" onClick={() => setCalculationLine(line)} className="inline-flex size-5 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground" title="Show cost calculation" aria-label={`Show calculation for ${line.sfgDescription}`}>
+                                          <Info className="size-3" />
+                                        </button>
+                                      </div>
+                                    </td>
                                     <td className="px-2 py-2.5">
                                       <div className="flex items-center justify-center gap-0.5">
                                         <button onClick={() => openEditAsset(line)} className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-foreground" title="Edit asset">
@@ -1157,6 +1173,43 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
           </div>
         </div>
       </div>
+
+      {/* ── Cost calculation dialog ── */}
+      <Dialog open={!!calculationLine} onOpenChange={(open) => !open && setCalculationLine(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>How this annual cost is calculated</DialogTitle>
+            <DialogDescription>{calculationLine?.sfgDescription}</DialogDescription>
+          </DialogHeader>
+          {calculationLine && (() => {
+            const calc = calcLine(calculationLine)
+            const activeBands = FREQ_BANDS.filter((band) => calculationLine.activeBands.includes(band) && (calculationLine.sfgHours[band] ?? 0) > 0)
+            return (
+              <div className="flex flex-col gap-4 py-2">
+                <div className="rounded-lg bg-muted/50 p-3 text-sm">
+                  {calculationLine.annualCostOverride !== undefined ? (
+                    <p><span className="font-medium">Quote amount override:</span> {formatCurrency(calculationLine.annualCostOverride)}</p>
+                  ) : (
+                    <>
+                      <p className="font-medium">Annual hours × regional sales rate</p>
+                      <p className="mt-1 text-muted-foreground">{calc.totalFlexedHours.toFixed(2)} hours × {formatCurrency(getSalesRate(calculationLine.discipline))}/hour</p>
+                    </>
+                  )}
+                </div>
+                <div className="flex flex-col gap-2">
+                  {activeBands.map((band) => {
+                    const hours = calculationLine.sfgHours[band] ?? 0
+                    const visits = VISITS_PER_YEAR[band]
+                    const efficiency = calculationLine.efficiencyFactor[band] ?? 1
+                    return <div key={band} className="flex items-center justify-between border-b pb-2 text-xs"><span>{BAND_LABELS[band]}</span><span className="text-muted-foreground">{hours}h × {visits} visits × {calculationLine.quantity} qty × {efficiency} efficiency = {(calc.annualHoursByBand[band] ?? 0).toFixed(2)}h</span></div>
+                  })}
+                </div>
+                <div className="flex items-center justify-between border-t pt-3 text-sm font-semibold"><span>Cost / year</span><span>{formatCurrency(calc.annualCost)}</span></div>
+              </div>
+            )
+          })()}
+        </DialogContent>
+      </Dialog>
 
       {/* ── Add SFG20 Asset Dialog ── */}
       <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>

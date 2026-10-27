@@ -163,6 +163,7 @@ export interface AssetLine {
   efficiencyFactor: Record<FrequencyBand, number>
   activeBands: FrequencyBand[]  // bands included in pricing (from criticality)
   criticality: CriticalityLevel
+  annualCostOverride?: number // optional quote-specific annual price, independent of regional rates
   isManual: false          // always false for SFG20 tasks
 }
 
@@ -179,6 +180,7 @@ export interface ManualTask {
   hoursPerVisit: number
   visitsPerYear: number
   efficiencyFactor: number
+  annualCostOverride?: number // optional quote-specific annual price, independent of regional rates
 }
 
 // Derived per line, computed on the fly

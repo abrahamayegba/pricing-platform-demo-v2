@@ -75,7 +75,7 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
   const [quoteType, setQuoteType] = useState<'tender' | 'quote'>('tender')
   const [businessEntity, setBusinessEntity] = useState<typeof BUSINESS_ENTITIES[0]>('virtual_facilities_services')
   const [clientName, setClientName] = useState('')
-  const [regionId, setRegionId] = useState('london')
+  const [regionId, setRegionId] = useState('scotland')
   const [profitMarginPct, setProfitMarginPct] = useState(settings.defaultProfitMarginPct)
   const [annualAdjPct, setAnnualAdjPct] = useState(settings.defaultAnnualAdjustmentPct)
   const [vatRate] = useState(settings.vatRate)
@@ -236,6 +236,7 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
       sfgDescription: draftLine.sfgDescription ?? pendingTask.description,
       sfgHours: draftLine.sfgHours ?? { ...emptyHours(), ...pendingTask.sfgHours },
       efficiencyFactor: draftLine.efficiencyFactor ?? { ...DEFAULT_EFFICIENCY },
+      annualCostOverride: draftLine.annualCostOverride === undefined || draftLine.annualCostOverride === null ? undefined : Number(draftLine.annualCostOverride),
       activeBands,
       criticality: selectedCriticality,
       isManual: false,
@@ -277,6 +278,7 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
       activeBands,
       criticality: editAssetCriticality,
       quantity: Number(editAssetDraft.quantity) || 1,
+      annualCostOverride: editAssetDraft.annualCostOverride === undefined || editAssetDraft.annualCostOverride === null ? undefined : Number(editAssetDraft.annualCostOverride),
       isManual: false,
     } as AssetLine
 
@@ -314,6 +316,7 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
       hoursPerVisit: draftManual.hoursPerVisit ?? 2,
       visitsPerYear: draftManual.visitsPerYear ?? 4,
       efficiencyFactor: draftManual.efficiencyFactor ?? 1,
+      annualCostOverride: draftManual.annualCostOverride === undefined || draftManual.annualCostOverride === null ? undefined : Number(draftManual.annualCostOverride),
     }
     setManualTasks((prev) => {
       const idx = prev.findIndex((t) => t.id === task.id)
@@ -1192,6 +1195,11 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
             <div><Label className="text-xs">Location</Label><Input value={draftLine.location || ''} onChange={(e) => setDraftLine({ ...draftLine, location: e.target.value })} placeholder="e.g. Ground Floor" className="mt-1 h-8 text-xs" /></div>
             <div><Label className="text-xs">Make/Model</Label><Input value={draftLine.makeModel || ''} onChange={(e) => setDraftLine({ ...draftLine, makeModel: e.target.value })} placeholder="e.g. Schneider" className="mt-1 h-8 text-xs" /></div>
             <div><Label className="text-xs">Quantity</Label><Input type="number" value={draftLine.quantity || 1} onChange={(e) => setDraftLine({ ...draftLine, quantity: Number(e.target.value) })} min="1" className="mt-1 h-8 text-xs" /></div>
+            <div>
+              <Label className="text-xs">Annual quote amount (£)</Label>
+              <Input type="number" step="0.01" min="0" placeholder="Use regional rate" value={draftLine.annualCostOverride ?? ''} onChange={(e) => setDraftLine({ ...draftLine, annualCostOverride: e.target.value === '' ? undefined : Number(e.target.value) })} className="mt-1 h-8 text-xs" />
+              <p className="mt-1 text-xs text-muted-foreground">Leave blank to calculate from the regional labour rate.</p>
+            </div>
             <Separator />
             <div>
               <Label className="text-xs font-semibold block mb-1">Criticality Level</Label>
@@ -1276,6 +1284,11 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
             <div><Label className="text-xs">Location</Label><Input value={editAssetDraft.location || ''} onChange={(e) => setEditAssetDraft({ ...editAssetDraft, location: e.target.value })} placeholder="e.g. Plant Room" className="mt-1 h-8 text-xs" /></div>
             <div><Label className="text-xs">Make/Model</Label><Input value={editAssetDraft.makeModel || ''} onChange={(e) => setEditAssetDraft({ ...editAssetDraft, makeModel: e.target.value })} placeholder="e.g. Schneider" className="mt-1 h-8 text-xs" /></div>
             <div><Label className="text-xs">Quantity</Label><Input type="number" value={editAssetDraft.quantity || 1} onChange={(e) => setEditAssetDraft({ ...editAssetDraft, quantity: Number(e.target.value) })} min="1" className="mt-1 h-8 text-xs" /></div>
+            <div>
+              <Label className="text-xs">Annual quote amount (£)</Label>
+              <Input type="number" step="0.01" min="0" placeholder="Use regional rate" value={editAssetDraft.annualCostOverride ?? ''} onChange={(e) => setEditAssetDraft({ ...editAssetDraft, annualCostOverride: e.target.value === '' ? undefined : Number(e.target.value) })} className="mt-1 h-8 text-xs" />
+              <p className="mt-1 text-xs text-muted-foreground">Leave blank to calculate from the regional labour rate.</p>
+            </div>
             <Separator />
             <div>
               <Label className="text-xs font-semibold block mb-1">Criticality Level</Label>
@@ -1352,6 +1365,11 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
               <div><Label className="text-xs">Quantity</Label><Input type="number" value={draftManual.quantity || 1} onChange={(e) => setDraftManual({ ...draftManual, quantity: Number(e.target.value) })} min="1" className="mt-1 h-8 text-xs" /></div>
               <div><Label className="text-xs">Hrs / Visit</Label><Input type="number" step="0.5" value={draftManual.hoursPerVisit || 2} onChange={(e) => setDraftManual({ ...draftManual, hoursPerVisit: Number(e.target.value) })} min="0.5" className="mt-1 h-8 text-xs" /></div>
               <div><Label className="text-xs">Visits / Year</Label><Input type="number" value={draftManual.visitsPerYear || 4} onChange={(e) => setDraftManual({ ...draftManual, visitsPerYear: Number(e.target.value) })} min="1" className="mt-1 h-8 text-xs" /></div>
+            </div>
+            <div>
+              <Label className="text-xs">Annual quote amount (£)</Label>
+              <Input type="number" step="0.01" min="0" placeholder="Use regional rate" value={draftManual.annualCostOverride ?? ''} onChange={(e) => setDraftManual({ ...draftManual, annualCostOverride: e.target.value === '' ? undefined : Number(e.target.value) })} className="mt-1 h-8 text-xs" />
+              <p className="mt-1 text-xs text-muted-foreground">Leave blank to calculate from the regional labour rate.</p>
             </div>
             <div className="p-2 bg-secondary/40 rounded text-xs text-muted-foreground">
               Annual hours: <span className="font-semibold text-foreground">{((draftManual.hoursPerVisit ?? 2) * (draftManual.visitsPerYear ?? 4) * (draftManual.quantity ?? 1)).toFixed(1)}h</span>{' '}

@@ -721,7 +721,16 @@ export default function EditQuotePage({ params }: { params: Promise<{ id: string
                             {DEMO_SITES.map((demo) => <SelectItem key={demo.id} value={demo.id}>{demo.name} — {demo.address}</SelectItem>)}
                           </SelectContent>
                         </Select>
-                        {site.address && <p className="mt-1 text-xs text-muted-foreground">{site.address}</p>}
+                        <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                          <div>
+                            <Label className="text-xs">Site name</Label>
+                            <Input value={site.name} onChange={(e) => updateSite(site.id, 'name', e.target.value)} placeholder="Enter a new site name" className="mt-1 h-8 text-xs" />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Address</Label>
+                            <Input value={site.address} onChange={(e) => updateSite(site.id, 'address', e.target.value)} placeholder="Enter the site address" className="mt-1 h-8 text-xs" />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

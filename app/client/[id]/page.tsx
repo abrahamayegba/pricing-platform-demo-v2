@@ -2,6 +2,7 @@
 
 import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { getQuote, getRateCard, calcAssetLine, calcManualTask } from '@/lib/store'
 import type { Quote, ManualTask } from '@/lib/types'
 import { BUSINESS_ENTITY_LABELS, QUOTE_TYPE_LABELS } from '@/lib/types'
@@ -121,8 +122,16 @@ export default function ClientViewPage({ params }: { params: Promise<{ id: strin
         {/* Letterhead */}
         <Card className="print:shadow-none print:border-2">
           <CardContent className="pt-6">
-            <div className="flex flex-col sm:flex-row sm:justify-between gap-4 pb-6 border-b mb-6">
-              <div>
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-5 pb-6 border-b mb-6">
+              <div className="space-y-4">
+                <Image
+                  src="/virtual-services-group-logo-main.svg"
+                  alt="Virtual Services Group"
+                  width={190}
+                  height={72}
+                  className="h-auto w-[150px] sm:w-[190px] object-contain object-left"
+                  priority
+                />
                 <div className="flex items-center gap-2 mb-1">
                   <Building2 className="w-4 h-4 text-muted-foreground" />
                   <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Issued by</p>

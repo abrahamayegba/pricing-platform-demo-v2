@@ -70,7 +70,7 @@ export default function CalculatorPage() {
   const [quoteType, setQuoteType] = useState<'tender' | 'quote'>('tender')
   const [businessEntity, setBusinessEntity] = useState<typeof BUSINESS_ENTITIES[0]>('virtual_facilities_services')
   const [clientName, setClientName] = useState('')
-  const [regionId, setRegionId] = useState('london')
+  const [regionId, setRegionId] = useState('scotland')
   const [profitMarginPct, setProfitMarginPct] = useState(settings.defaultProfitMarginPct)
   const [annualAdjPct, setAnnualAdjPct] = useState(settings.defaultAnnualAdjustmentPct)
   const [vatRate] = useState(settings.vatRate)
@@ -143,7 +143,7 @@ export default function CalculatorPage() {
   const [oneOffDialogOpen, setOneOffDialogOpen] = useState(false)
   const [draftOneOff, setDraftOneOff] = useState<Partial<OneOffCost>>({})
 
-  // ── Support costs dialog ────────────────────────────────────────────────────
+  // ── Support costs dialog ─���──────────────────────────────────────────────────
   const [supportDialogOpen, setSupportDialogOpen] = useState(false)
   const [draftSupport, setDraftSupport] = useState<Partial<SupportCost>>({})
   const [supportMode, setSupportMode] = useState<'pick' | 'new'>('pick')

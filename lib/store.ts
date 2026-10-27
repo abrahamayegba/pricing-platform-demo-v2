@@ -115,18 +115,18 @@ export function calcAssetLine(line: AssetLine, salesRate: number) {
   }
 
   return {
-    annualHoursByBand,
-    totalSFGHours,
-    totalFlexedHours,
-    annualCost: totalFlexedHours * salesRate,
+  annualHoursByBand,
+  totalSFGHours,
+  totalFlexedHours,
+  annualCost: line.annualCostOverride ?? totalFlexedHours * salesRate,
   }
 }
 
 export function calcManualTask(task: ManualTask, salesRate: number) {
   const annualHours = task.hoursPerVisit * task.visitsPerYear * task.quantity * task.efficiencyFactor
   return {
-    annualHours,
-    annualCost: annualHours * salesRate,
+  annualHours,
+  annualCost: task.annualCostOverride ?? annualHours * salesRate,
   }
 }
 

@@ -236,6 +236,7 @@ export const SFG20_TASKS: SFG20Task[] = [
 // ── Regions ───────────────────────────────────────────────────────────────────
 
 export const REGIONS: Region[] = [
+  { id: 'scotland',     name: 'Scotland' },
   { id: 'london',       name: 'London' },
   { id: 'south_east',   name: 'South East' },
   { id: 'south_west',   name: 'South West' },
@@ -298,7 +299,7 @@ function makeRates(
 
 export const DEFAULT_RATE_CARDS: RateCard[] = [
   {
-    regionId: 'london',
+    regionId: 'scotland',
     disciplines: makeRates(
       { electrical: 20.68, mechanical: 20.00, gas: 21.22, ac_refrigeration: 21.22, fabric: 18.00, me: 20.68, water_hygiene: 18.50 },
       17

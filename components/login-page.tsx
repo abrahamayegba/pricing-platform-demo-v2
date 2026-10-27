@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, RotateCcw } from "lucide-react";
 import Image from "next/image";
 
 export default function LoginPage() {
@@ -110,6 +110,22 @@ export default function LoginPage() {
               <Button type="submit" className="w-full mt-1" disabled={loading}>
                 {loading ? "Signing in..." : "Sign in"}
               </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => {
+                  localStorage.clear()
+                  sessionStorage.clear()
+                  window.location.reload()
+                }}
+              >
+                <RotateCcw data-icon="inline-start" />
+                Reset demo data
+              </Button>
+              <p className="text-xs text-center text-muted-foreground">
+                Clears saved quotes, rates, settings, and the current demo session.
+              </p>
             </form>
 
             <div className="mt-5 pt-4 border-t">

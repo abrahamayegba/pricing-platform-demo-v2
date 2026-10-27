@@ -41,6 +41,7 @@ import { useAuth } from "@/lib/auth-context";
 import { pctDiff } from "@/lib/utils-app";
 
 export default function RatesPage() {
+<<<<<<< HEAD
   const { user } = useAuth();
   const canEdit = user?.role === "admin" || user?.role === "pricing_manager";
   const [rateCards, setRateCards] = useState<RateCard[]>([]);
@@ -53,6 +54,18 @@ export default function RatesPage() {
   const [saved, setSaved] = useState<string | null>(null);
   const [activeRegion, setActiveRegion] = useState<string>("london");
   const [activeTab, setActiveTab] = useState<"labour" | "roles">("labour");
+=======
+  const { user } = useAuth()
+  const canEdit = user?.role === 'admin' || user?.role === 'pricing_manager'
+  const [rateCards, setRateCards] = useState<RateCard[]>([])
+  const [editingRegion, setEditingRegion] = useState<string | null>(null)
+  const [editValues, setEditValues] = useState<Record<Discipline, Partial<DisciplineRates>>>({} as Record<Discipline, Partial<DisciplineRates>>)
+  const [editOverhead, setEditOverhead] = useState<string>('17')
+  const [editSfgIndex, setEditSfgIndex] = useState<string>('100')
+  const [saved, setSaved] = useState<string | null>(null)
+  const [activeRegion, setActiveRegion] = useState<string>('scotland')
+  const [activeTab, setActiveTab] = useState<'labour' | 'roles'>('labour')
+>>>>>>> refs/remotes/origin/main
 
   // Role rates state
   const [roleRates, setRoleRates] = useState<RoleRate[]>([]);

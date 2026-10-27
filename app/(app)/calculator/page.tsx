@@ -143,7 +143,7 @@ export default function CalculatorPage() {
   const [oneOffDialogOpen, setOneOffDialogOpen] = useState(false)
   const [draftOneOff, setDraftOneOff] = useState<Partial<OneOffCost>>({})
 
-  // ── Support costs dialog ─���──────────────────────────────────────────────────
+  // ── Support costs dialog �����──────────────────────────────────────────────────
   const [supportDialogOpen, setSupportDialogOpen] = useState(false)
   const [draftSupport, setDraftSupport] = useState<Partial<SupportCost>>({})
   const [supportMode, setSupportMode] = useState<'pick' | 'new'>('pick')
@@ -254,6 +254,7 @@ export default function CalculatorPage() {
       efficiencyFactor: draftLine.efficiencyFactor ?? { ...DEFAULT_EFFICIENCY },
       activeBands,
       criticality: selectedCriticality,
+      annualCostOverride: draftLine.annualCostOverride === undefined || draftLine.annualCostOverride === null ? undefined : Number(draftLine.annualCostOverride),
       isManual: false,
     }
     setAssetLines((prev) => [...prev, line])
@@ -326,9 +327,10 @@ export default function CalculatorPage() {
       makeModel: draftManual.makeModel ?? '',
       quantity: draftManual.quantity ?? 1,
       hoursPerVisit: draftManual.hoursPerVisit ?? 2,
-      visitsPerYear: draftManual.visitsPerYear ?? 4,
-      efficiencyFactor: draftManual.efficiencyFactor ?? 1,
-    }
+    visitsPerYear: draftManual.visitsPerYear ?? 4,
+    efficiencyFactor: draftManual.efficiencyFactor ?? 1,
+    annualCostOverride: draftManual.annualCostOverride === undefined || draftManual.annualCostOverride === null ? undefined : Number(draftManual.annualCostOverride),
+  }
     setManualTasks((prev) => {
       const idx = prev.findIndex((t) => t.id === task.id)
       if (idx >= 0) { const next = [...prev]; next[idx] = task; return next }
@@ -1832,6 +1834,11 @@ export default function CalculatorPage() {
                 className="mt-1 h-8 text-xs"
               />
             </div>
+            <div>
+              <Label className="text-xs">Annual quote amount (£)</Label>
+              <Input type="number" step="0.01" min="0" placeholder="Use regional rate" value={draftLine.annualCostOverride ?? ''} onChange={(e) => setDraftLine({ ...draftLine, annualCostOverride: e.target.value === '' ? undefined : Number(e.target.value) })} className="mt-1 h-8 text-xs" />
+              <p className="mt-1 text-xs text-muted-foreground">Leave blank to calculate from the regional rate.</p>
+            </div>
 
             {/* Criticality Selection */}
             <Separator />
@@ -2211,6 +2218,11 @@ export default function CalculatorPage() {
                   className="mt-1 h-8 text-xs"
                 />
               </div>
+            </div>
+            <div>
+              <Label className="text-xs">Annual quote amount (£)</Label>
+              <Input type="number" step="0.01" min="0" placeholder="Use regional rate" value={draftManual.annualCostOverride ?? ''} onChange={(e) => setDraftManual({ ...draftManual, annualCostOverride: e.target.value === '' ? undefined : Number(e.target.value) })} className="mt-1 h-8 text-xs" />
+              <p className="mt-1 text-xs text-muted-foreground">Leave blank to calculate from the regional rate.</p>
             </div>
             <div className="p-2 bg-secondary/40 rounded text-xs text-muted-foreground">
               Annual hours:{" "}

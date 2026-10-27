@@ -25,7 +25,7 @@ export default function RatesPage() {
   const [editOverhead, setEditOverhead] = useState<string>('17')
   const [editSfgIndex, setEditSfgIndex] = useState<string>('100')
   const [saved, setSaved] = useState<string | null>(null)
-  const [activeRegion, setActiveRegion] = useState<string>('london')
+  const [activeRegion, setActiveRegion] = useState<string>('scotland')
   const [activeTab, setActiveTab] = useState<'labour' | 'roles'>('labour')
 
   // Role rates state

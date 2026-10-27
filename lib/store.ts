@@ -73,7 +73,17 @@ export function saveRoleRates(rates: RoleRate[]) {
 export function getRateCards(): RateCard[] {
   if (typeof window === 'undefined') return DEFAULT_RATE_CARDS
   const s = localStorage.getItem(KEYS.RATE_CARDS)
-  return s ? JSON.parse(s) : DEFAULT_RATE_CARDS
+  if (!s) return DEFAULT_RATE_CARDS
+  try {
+    const stored = JSON.parse(s) as RateCard[]
+    const unique = stored.filter((card, index, cards) => cards.findIndex((candidate) => candidate.regionId === card.regionId) === index)
+    const missing = DEFAULT_RATE_CARDS.filter((defaultCard) => !unique.some((card) => card.regionId === defaultCard.regionId))
+    const normalized = [...unique, ...missing]
+    if (normalized.length !== stored.length) localStorage.setItem(KEYS.RATE_CARDS, JSON.stringify(normalized))
+    return normalized
+  } catch {
+    return DEFAULT_RATE_CARDS
+  }
 }
 
 export function saveRateCards(cards: RateCard[]) {

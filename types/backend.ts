@@ -3,6 +3,16 @@
 
 // USER & AUTH
 export type UserRole = 'admin' | 'pricing_manager' | 'viewer'
+export type CompanyCode = 'vfs' | 'water'
+
+export interface Company {
+  id: string
+  code: CompanyCode
+  name: string
+  shortName: string
+  createdAt: Date
+  updatedAt: Date
+}
 
 export interface User {
   id: string
@@ -10,6 +20,8 @@ export interface User {
   email: string
   role: UserRole
   initials: string
+  companyId: string
+  company?: Company
   createdAt: Date
   updatedAt: Date
 }

@@ -1,11 +1,16 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
-import type { User } from './types'
+import type { Company, User } from './types'
+
+const DEMO_COMPANIES: Record<'vfs' | 'water', Company> = {
+  vfs: { id: 'company-vfs', code: 'vfs', name: 'Virtual Facility Services', shortName: 'VFS', createdAt: '2026-01-01', updatedAt: '2026-01-01' },
+  water: { id: 'company-water', code: 'water', name: 'Virtual Water Services', shortName: 'Water', createdAt: '2026-01-01', updatedAt: '2026-01-01' },
+}
 
 const DEMO_USERS: User[] = [
-  { id: 'u1', name: 'Abraham Ayegba', email: 'abraham@virtualfs.co.uk', role: 'admin', initials: 'AA' },
-  { id: 'u2', name: 'Grant Currie', email: 'grant@virtualfs.co.uk', role: 'admin', initials: 'GC' },
+  { id: 'u1', name: 'Abraham Ayegba', email: 'abraham@virtualfs.co.uk', role: 'admin', initials: 'AA', companyId: DEMO_COMPANIES.vfs.id, company: DEMO_COMPANIES.vfs },
+  { id: 'u2', name: 'Grant Currie', email: 'grant@virtualfs.co.uk', role: 'admin', initials: 'GC', companyId: DEMO_COMPANIES.water.id, company: DEMO_COMPANIES.water },
 ]
 
 interface AuthContextValue {

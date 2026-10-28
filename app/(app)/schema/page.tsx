@@ -42,6 +42,24 @@ interface ModelDef {
 const MODELS: ModelDef[] = [
   // ── AUTH ──────────────────────────────────────────────────────────────────
   {
+    name: 'Company',
+    table: 'companies',
+    group: 'Auth',
+    icon: Building2,
+    color: 'bg-violet-700',
+    textColor: 'text-violet-700',
+    description: 'Operating company used to scope users, quotes, Simpro imports and client views.',
+    relations: ['User', 'Quote', 'SimproQuoteImport'],
+    fields: [
+      { name: 'id',        type: 'String (cuid)', kind: 'pk' },
+      { name: 'code',      type: 'CompanyCode',   kind: 'enum', note: 'VFS | WATER' },
+      { name: 'name',      type: 'String',        kind: 'scalar' },
+      { name: 'shortName', type: 'String',        kind: 'scalar' },
+      { name: 'createdAt', type: 'DateTime',      kind: 'scalar', default: 'now()' },
+      { name: 'updatedAt', type: 'DateTime',      kind: 'scalar' },
+    ],
+  },
+  {
     name: 'User',
     table: 'users',
     group: 'Auth',
@@ -49,9 +67,10 @@ const MODELS: ModelDef[] = [
     color: 'bg-violet-600',
     textColor: 'text-violet-700',
     description: 'Platform users with role-based access. Passwords are bcrypt-hashed.',
-    relations: ['Session', 'Quote', 'AuditLog'],
+    relations: ['Company', 'Session', 'Quote', 'AuditLog'],
     fields: [
       { name: 'id',           type: 'String (cuid)',   kind: 'pk' },
+      { name: 'companyId',    type: 'String',          kind: 'fk',    note: '→ Company' },
       { name: 'email',        type: 'String',          kind: 'scalar', note: 'unique' },
       { name: 'name',         type: 'String',          kind: 'scalar' },
       { name: 'initials',     type: 'String',          kind: 'scalar', note: 'max 4 chars' },
@@ -59,6 +78,35 @@ const MODELS: ModelDef[] = [
       { name: 'role',         type: 'UserRole',        kind: 'enum',   default: 'VIEWER' },
       { name: 'createdAt',    type: 'DateTime',        kind: 'scalar', default: 'now()' },
       { name: 'updatedAt',    type: 'DateTime',        kind: 'scalar' },
+    ],
+  },
+  {
+    name: 'SimproQuoteImport',
+    table: 'simpro_quote_imports',
+    group: 'Quotes',
+    icon: FileText,
+    color: 'bg-amber-600',
+    textColor: 'text-amber-700',
+    description: 'Read-only Simpro source data used to render and send a client view; never merged into quote editing.',
+    relations: ['Company', 'User', 'ClientView'],
+    fields: [
+      { name: 'id',                type: 'String (cuid)', kind: 'pk' },
+      { name: 'simproQuoteId',     type: 'String',        kind: 'scalar' },
+      { name: 'companyId',         type: 'String',        kind: 'fk', note: '→ Company' },
+      { name: 'sourceQuoteNumber', type: 'String',        kind: 'scalar' },
+      { name: 'sourceQuoteDate',   type: 'DateTime?',      kind: 'scalar' },
+      { name: 'sourceExpiryDate',  type: 'DateTime?',      kind: 'scalar' },
+      { name: 'clientName',        type: 'String',        kind: 'scalar' },
+      { name: 'contact',           type: 'Json',          kind: 'scalar', note: 'name, email, phone' },
+      { name: 'site',              type: 'Json',          kind: 'scalar', note: 'name and address' },
+      { name: 'lineItems',         type: 'Json',          kind: 'scalar' },
+      { name: 'notes',             type: 'Json?',         kind: 'scalar', note: 'preserves rich text structure' },
+      { name: 'exclusions',        type: 'Json?',         kind: 'scalar', note: 'preserves rich text structure' },
+      { name: 'status',            type: 'ImportStatus',  kind: 'enum', default: 'IMPORTED' },
+      { name: 'clientViewQuoteId', type: 'String?',       kind: 'fk', note: '→ ClientView' },
+      { name: 'createdBy',         type: 'String',        kind: 'fk', note: '→ User' },
+      { name: 'createdAt',         type: 'DateTime',      kind: 'scalar', default: 'now()' },
+      { name: 'updatedAt',         type: 'DateTime',      kind: 'scalar' },
     ],
   },
   {
@@ -408,6 +456,21 @@ const ENUMS: { name: string; values: { value: string; note?: string }[] }[] = [
     ],
   },
   {
+    name: 'ImportStatus',
+    values: [
+      { value: 'IMPORTED', note: 'Source received' },
+      { value: 'VIEWED', note: 'Client view opened' },
+      { value: 'SENT', note: 'Client view sent' },
+    ],
+  },
+  {
+    name: 'CompanyCode',
+    values: [
+      { value: 'VFS', note: 'Virtual Facility Services' },
+      { value: 'WATER', note: 'Virtual Water Services' },
+    ],
+  },
+  {
     name: 'BusinessEntity',
     values: [
       { value: 'VFS', note: 'Virtual Facility Services' },
@@ -472,6 +535,8 @@ const ENUMS: { name: string; values: { value: string; note?: string }[] }[] = [
 // ─────────────────────────────────────────────────────────────────────────────
 
 const EDGES: { from: string; to: string; label: string; card: string }[] = [
+  { from: 'Company',           to: 'User',                label: 'has members', card: '1 → N' },
+  { from: 'Company',           to: 'SimproQuoteImport',    label: 'owns imports', card: '1 → N' },
   { from: 'User',              to: 'Session',             label: 'has',     card: '1 → N' },
   { from: 'User',              to: 'Quote',               label: 'creates', card: '1 → N' },
   { from: 'User',              to: 'AuditLog',            label: 'logs',    card: '1 → N' },

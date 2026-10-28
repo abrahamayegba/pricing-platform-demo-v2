@@ -33,6 +33,18 @@ export type BusinessEntity =
   | 'virtual_facilities_services'
   | 'virtual_water_services'
 
+export type CompanyCode = 'vfs' | 'water'
+
+/** The operating company that owns users and quote data. */
+export interface Company {
+  id: string
+  code: CompanyCode
+  name: string
+  shortName: string
+  createdAt: string
+  updatedAt: string
+}
+
 export const BUSINESS_ENTITY_LABELS: Record<BusinessEntity, string> = {
   virtual_facilities_services:   'Virtual Facility Services',
   virtual_water_services:        'Virtual Water Services',
@@ -303,6 +315,40 @@ export const DEFAULT_APP_SETTINGS: AppSettings = {
   companyName: 'Virtual Facility Services',
 }
 
+// ── Simpro import ─────────────────────────────────────────────────────────────
+
+export type SimproImportStatus = 'imported' | 'viewed' | 'sent'
+
+/** Read-only source record used to render a client-facing imported quote. */
+export interface SimproQuoteImport {
+  id: string
+  simproQuoteId: string
+  companyId: string
+  companyCode: CompanyCode
+  clientName: string
+  sourceQuoteNumber: string
+  sourceQuoteDate?: string
+  sourceExpiryDate?: string
+  sourceContactName?: string
+  sourceContactEmail?: string
+  siteName?: string
+  siteAddress?: string
+  lineItems: Array<{
+    id: string
+    description: string
+    quantity?: number
+    unitPrice?: number
+    total?: number
+  }>
+  notes?: string
+  exclusions?: string
+  status: SimproImportStatus
+  clientViewQuoteId?: string
+  createdBy: string
+  createdAt: string
+  updatedAt: string
+}
+
 // ── Quote ────────────────────────────────────────────────────────────────────
 
 export type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'declined'
@@ -367,4 +413,7 @@ export interface User {
   email: string
   role: 'admin' | 'pricing_manager' | 'viewer'
   initials: string
+  /** Every authenticated user belongs to exactly one operating company. */
+  companyId: string
+  company: Company
 }

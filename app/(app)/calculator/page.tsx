@@ -1785,8 +1785,8 @@ export default function CalculatorPage() {
       </div>
 
       <Dialog open={importOpen} onOpenChange={setImportOpen}>
-        <DialogContent>
-          <DialogHeader>
+        <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-xl">
+          <DialogHeader className="pr-6">
             <DialogTitle>Import quote from Simpro</DialogTitle>
             <DialogDescription>This does not start or populate a new quote. It creates a client-view copy of the Simpro quote and opens the existing Print / PDF view.</DialogDescription>
           </DialogHeader>

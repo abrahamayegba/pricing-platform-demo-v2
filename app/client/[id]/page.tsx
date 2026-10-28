@@ -21,6 +21,40 @@ const BAND_FREQ_LABELS: Record<string, string> = {
   '6M': 'Bi-Annual', '12M': 'Annual',
 }
 
+const IMPORTED_NOTE_HEADINGS = new Set([
+  'Background', 'Proposal', 'Scope', 'Terms', 'Customer', 'Site', 'Date issued',
+  'Due', 'Request', 'Job', 'Order', 'Stage', 'Cost centre', 'Status', 'Labour',
+])
+
+function FormattedNotes({ notes }: { notes: string }) {
+  const normalized = notes
+    .replace(/\s*\|\s*/g, '\n')
+    .replace(/\s+(?=(?:Background|Proposal|Scope|Terms|Customer|Site|Date issued|Due|Request|Job|Order|Stage|Cost centre|Status|Labour):)/g, '\n')
+
+  return (
+    <div className="flex flex-col gap-4 text-sm leading-relaxed text-muted-foreground">
+      {normalized.split(/\n+/).map((entry, index) => {
+        const text = entry.trim()
+        if (!text) return null
+        const numbered = text.match(/^(\\d+)\\.\\s+(.+)$/)
+        const heading = text.match(/^([^:]{2,30}):\\s*(.*)$/)
+        if (numbered) {
+          return <p key={`${index}-${text}`} className="pl-5 relative"><span className="absolute left-0 font-medium text-foreground">{numbered[1]}.</span>{numbered[2]}</p>
+        }
+        if (heading && IMPORTED_NOTE_HEADINGS.has(heading[1])) {
+          return (
+            <section key={`${index}-${text}`} className="flex flex-col gap-1">
+              <h3 className="font-semibold text-foreground">{heading[1]}</h3>
+              {heading[2] && <p>{heading[2]}</p>}
+            </section>
+          )
+        }
+        return <p key={`${index}-${text}`}>{text}</p>
+      })}
+    </div>
+  )
+}
+
 export default function ClientViewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
@@ -303,7 +337,7 @@ export default function ClientViewPage({ params }: { params: Promise<{ id: strin
               <CardTitle className="text-base">Notes & Exclusions</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm whitespace-pre-wrap text-muted-foreground leading-relaxed">{quote.notes}</p>
+              <FormattedNotes notes={quote.notes} />
             </CardContent>
           </Card>
         )}

@@ -37,6 +37,8 @@ enum QuoteStatus {
   SENT
   ACCEPTED
   DECLINED
+  EXPIRED
+  ARCHIVED
 }
 
 // Discipline determines which rate card row is used for pricing
@@ -48,6 +50,10 @@ enum Discipline {
   FABRIC
   ME               // M&E general
   WATER_HYGIENE
+  FIRE_SAFETY
+  LIFT
+  SECURITY
+  BUILDING_SERVICES
 }
 
 // CriticalityLevel drives which frequency bands are active for an asset
@@ -69,6 +75,10 @@ enum FrequencyBand {
   M5   // Every 5 months
   M6   // Half-yearly
   M12  // Annual
+  Y2   // Every 2 years
+  Y3   // Every 3 years
+  Y4   // Every 4 years
+  Y5   // Every 5 years
 }
 
 // =============================================================================
@@ -183,8 +193,10 @@ model DisciplineRate {
 
 model SFG20Task {
   id          String     @id @default(cuid())
-  code        String     @unique           // e.g. "SFG 56-10"
-  section     String                       // e.g. "Electrical"
+  code        String                         // e.g. "SFG 56-10"
+  source      String        @default("SFG20") // library/source identifier
+  sourceVersion String?                      // source release or API version
+  section     String                         // e.g. "Electrical"
   sectionCode String                       // e.g. "56"
   description String
   discipline  Discipline
@@ -197,6 +209,9 @@ model SFG20Task {
   assetLines     AssetLine[]
 
   @@index([discipline])
+  @@index([code])
+  @@index([sectionCode])
+  @@index([source, sourceVersion])
   @@map("sfg20_tasks")
 }
 
@@ -230,6 +245,18 @@ model Quote {
   annualAdjPct         Decimal        @db.Decimal(6, 2) @default(2)  // year-on-year uplift %
   vatRate              Decimal        @db.Decimal(6, 2) @default(20)
   notes                String?
+  description          String?
+  clientContactName    String?
+  clientContactEmail   String?
+  clientContactPhone   String?
+  validUntil           DateTime?
+  sentAt               DateTime?
+  acceptedAt           DateTime?
+  declinedAt           DateTime?
+  archivedAt           DateTime?
+
+  // Immutable pricing inputs used to reproduce historical quote totals.
+  rateCardSnapshot     Json?
 
   // Computed summary totals — stored for fast list/dashboard queries
   ppmSubtotal          Decimal        @db.Decimal(12, 2) @default(0)
